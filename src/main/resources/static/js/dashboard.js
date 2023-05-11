@@ -68,9 +68,9 @@
 
         list.innerHTML +=       '<tr>\n' +
             '                        <td>' + content[key].updatedTime + '</td>\n' +
-            '                        <td>' + currentPrice + '</td>\n' +
-            '                        <td>' + changedValue + '</td>\n' +
-            '                        <td>' + changedPercent + '</td>\n' +
+            '                        <td>' + currentPrice + ' тг.</td>\n' +
+            '                        <td>' + changedValue + ' тг.</td>\n' +
+            '                        <td>' + changedPercent + '% </td>\n' +
             '                    </tr>'
     }
 })()
