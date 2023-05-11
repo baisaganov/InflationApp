@@ -4,10 +4,8 @@ import kz.inflation.InflationApp.models.Product;
 import kz.inflation.InflationApp.scripts.ProductsParser;
 import kz.inflation.InflationApp.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,8 +38,9 @@ public class ProductAPIController {
         return productService.getAllProductsByArticul(articul);
     }
 
-    @GetMapping("/product/unique")
-    public List<Product> getUniqueProducts(){
-        return productService.getAllUniqueProducts();
+    @GetMapping("/products/unique")
+    public List<Product> getUniqueProducts(@RequestParam(required = false, defaultValue = "0") int page,
+                                           @RequestParam(required = false, defaultValue = "12") int size){
+        return productService.getAllUniqueProducts(PageRequest.of(page, size));
     }
 }

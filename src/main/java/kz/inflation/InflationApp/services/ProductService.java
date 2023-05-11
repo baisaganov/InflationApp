@@ -3,12 +3,12 @@ package kz.inflation.InflationApp.services;
 import kz.inflation.InflationApp.models.Product;
 import kz.inflation.InflationApp.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,8 +29,13 @@ public class ProductService {
         return repository.findAll();
     }
 
-    public List<Product> getAllUniqueProducts(){
-        return repository.findDistinctArticul();
+    public List<Product> getAllUniqueProducts(PageRequest pageRequest){
+        var articulList = repository.selectDistinctArticul(pageRequest);
+        List<Product> products = new ArrayList<>();
+        for (Long articul : articulList) {
+            products.add(repository.getDistinctFirstByArticulOrderByUpdatedTimeAsc(articul));
+        }
+        return products;
     }
 
     public List<Product> getAllProductsByArticul(Long articul){
