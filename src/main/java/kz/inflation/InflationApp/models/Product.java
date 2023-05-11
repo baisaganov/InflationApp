@@ -2,6 +2,7 @@ package kz.inflation.InflationApp.models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity(name = "products")
@@ -21,12 +22,18 @@ public class Product {
     private int price;
 
     @Column(name = "updated_time")
-    private LocalDateTime updatedTime;
+    private LocalDate updatedTime;
 
     public Product() {
     }
 
-    public Product(Long articul, String name, int price, LocalDateTime updatedTime) {
+    public Product(Long articul, String name, int price) {
+        this.articul = articul;
+        this.name = name;
+        this.price = price;
+    }
+
+    public Product(Long articul, String name, int price, LocalDate updatedTime) {
         this.articul = articul;
         this.name = name;
         this.price = price;
@@ -65,11 +72,11 @@ public class Product {
         this.price = price;
     }
 
-    public LocalDateTime getUpdatedTime() {
+    public LocalDate getUpdatedTime() {
         return updatedTime;
     }
 
-    public void setUpdatedTime(LocalDateTime updatedTime) {
+    public void setUpdatedTime(LocalDate updatedTime) {
         this.updatedTime = updatedTime;
     }
 }

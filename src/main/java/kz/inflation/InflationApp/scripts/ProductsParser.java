@@ -1,17 +1,20 @@
 package kz.inflation.InflationApp.scripts;
 
+import kz.inflation.InflationApp.models.Product;
 import kz.inflation.InflationApp.services.ProductService;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+
+/*
+    TODO: Сделать многопоточный запуск
+*/
 @Component
 public class ProductsParser {
 
@@ -22,31 +25,34 @@ public class ProductsParser {
         this.productService = productService;
     }
 
-    @Scheduled(fixedDelay = 24 * 60 * 60 * 1000)
-    public void updateAllCategories(){
-        String url = "https://kaspi.kz/shop/nur-sultan/c/freeze%20dried%20food%20on%20a%20camping%20trip/?q=%3Acategory%3AFreeze%20dried%20food%20on%20a%20camping%20trip&sort=relevance&sc=";
+    public void startParsingProducts(){
+        ExecutorService service = Executors.newFixedThreadPool(6);
+
+        String milkLink = "https://kaspi.kz/shop/nur-sultan/c/dairy%20and%20eggs/?q=%3Acategory%3ADairy%20and%20eggs%3AallMerchants%3AMagnum&sort=relevance&sc=";
+        String candies = "https://kaspi.kz/shop/nur-sultan/c/pastry/?q=%3Acategory%3APastry%3AallMerchants%3AMagnum&sort=relevance&sc=";
+        String fruitsAndVeg = "https://kaspi.kz/shop/nur-sultan/c/fruits%20and%20vegetables/?q=%3Acategory%3AFruits%20and%20vegetables%3AallMerchants%3AMagnum&sort=relevance&sc=";
+        String juicesAndWater = "https://kaspi.kz/shop/nur-sultan/c/water%20and%20beverages/?q=%3Acategory%3AWater%20and%20beverages%3AallMerchants%3AMagnum&sort=relevance&sc=";
+        String pasta = "https://kaspi.kz/shop/nur-sultan/c/grains%20and%20pasta/?q=%3Acategory%3AGrains%20and%20pasta%3AallMerchants%3AMagnum&sort=relevance&sc=";
+        String oilsAndSauces = "https://kaspi.kz/shop/nur-sultan/c/spices%20and%20seasoning/?q=%3Acategory%3ASpices%20and%20seasoning%3AallMerchants%3AMagnum&sort=relevance&sc=";
+
+        List<ThreadParser> parserList = new ArrayList<ThreadParser>(
+                List.of(new ThreadParser(productService, milkLink, "milks"),
+                        new ThreadParser(productService, candies,"candies"),
+                        new ThreadParser(productService, fruitsAndVeg, "fruitsAndVeg"),
+                        new ThreadParser(productService, juicesAndWater, "juicesAndWater"),
+                        new ThreadParser(productService, pasta, "pasta"),
+                        new ThreadParser(productService, oilsAndSauces, "oilsAndSauces")
+                )
+        );
 
         try {
-//            Document document = Jsoup.connect(url)
-//                    .userAgent("Mozilla")
-//                    .timeout(5000)
-//                    .referrer("https://google.com")
-//                    .get();
-            Document document = Jsoup.parse(new URL(url), 10000);
-
-            Elements products = document.getElementsByClass("item-card");
-            for (Element product : products) {
-                Long articul = Long.parseLong(product.attr("data-product-id").toString());
-                String name = product.getElementsByClass("item-card__info").text();
-//                String price = product.getElementsByClass("item-card__debet").text();
-
-//                String price = product.select("span[class=item-card__prices-price]").text();
-                System.out.println(articul + " " + name + " " );
-//                System.out.println(product);
+            for (ThreadParser parser: parserList) {
+                service.submit(parser);
             }
-
-        } catch (IOException e) {
+        } catch (Exception e){
             e.printStackTrace();
         }
+
+        service.shutdown();
     }
 }
