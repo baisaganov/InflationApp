@@ -13,6 +13,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -44,15 +46,23 @@ public class ThreadParser implements Runnable {
     }
 
     public void seleniumGetLinks() {
-        System.setProperty("webdriver.chrome.driver", "selenium/chromedriver");
-//        System.setProperty("webdriver.chrome.driver", "selenium/chromedriver114");
-        System.setProperty("webdriver.chrome.whitelistedIps", "");
+        // CHROME DRIVER
+//        System.setProperty("webdriver.chrome.driver", "selenium/chromedriver");
+////        System.setProperty("webdriver.chrome.driver", "selenium/chromedriver114");
+//        System.setProperty("webdriver.chrome.whitelistedIps", "");
+//
+//        ChromeOptions options = new ChromeOptions();
+//        options.addArguments("--remote-allow-origins=*");
+////        options.addArguments("--headless");
+//
+//        WebDriver driver = new ChromeDriver(options);
 
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--remote-allow-origins=*");
-//        options.addArguments("--headless");
+//        FIREFOX DRIVER
+        System.setProperty("webdriver.gecko.driver", "selenium/geckodriver");
+        FirefoxOptions options = new FirefoxOptions();
+        options.addArguments("-headless");
+        WebDriver driver = new FirefoxDriver(options);
 
-        WebDriver driver = new ChromeDriver(options);
         driver.get(this.link);
 
         try {
