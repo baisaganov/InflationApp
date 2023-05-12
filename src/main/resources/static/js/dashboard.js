@@ -54,23 +54,22 @@
 
     // List
     let prevPrice
-    for (let key = content.length-1; key>=0; key--){
+    console.log(content)
+    for (let key = 0; key < content.length; key++){
         const currentPrice = content[key].price
-
-        if (!prevPrice){
+        if (key===0){
             prevPrice = content[key].price
         } else {
-            prevPrice = content[key+1].price
+            prevPrice = content[key-1].price
         }
-
         let changedValue = currentPrice - prevPrice
         let changedPercent = ((currentPrice - prevPrice)/prevPrice*100).toFixed(2)
 
-        list.innerHTML +=       '<tr>\n' +
+        list.innerHTML =       '<tr>\n' +
             '                        <td>' + content[key].updatedTime + '</td>\n' +
             '                        <td>' + currentPrice + ' тг.</td>\n' +
             '                        <td>' + changedValue + ' тг.</td>\n' +
             '                        <td>' + changedPercent + '% </td>\n' +
-            '                    </tr>'
+            '                    </tr>' + list.innerHTML
     }
 })()
