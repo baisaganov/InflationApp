@@ -63,7 +63,7 @@
             prevPrice = content[key-1].price
         }
         let changedValue = currentPrice - prevPrice
-        let changedPercent = ((currentPrice - prevPrice)/prevPrice*100).toFixed(2)
+        let changedPercent = ((currentPrice - prevPrice)/currentPrice*100).toFixed(2)
 
         list.innerHTML =       '<tr>\n' +
             '                        <td>' + content[key].updatedTime + '</td>\n' +
