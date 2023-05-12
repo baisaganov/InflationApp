@@ -2,6 +2,7 @@ package kz.inflation.InflationApp.api;
 
 import kz.inflation.InflationApp.models.Product;
 import kz.inflation.InflationApp.scripts.ProductsParser;
+import kz.inflation.InflationApp.services.ProductInflationService;
 import kz.inflation.InflationApp.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -15,11 +16,13 @@ public class ProductAPIController {
 
     private final ProductService productService;
     private final ProductsParser productsParser;
+    private final ProductInflationService productInflationService;
 
     @Autowired
-    public ProductAPIController(ProductService productService, ProductsParser productsParser) {
+    public ProductAPIController(ProductService productService, ProductsParser productsParser, ProductInflationService productInflationService) {
         this.productService = productService;
         this.productsParser = productsParser;
+        this.productInflationService = productInflationService;
     }
 
     @GetMapping("/products/update")
