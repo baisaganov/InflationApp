@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findProductsByArticulOrderByUpdatedTimeAsc(Long articul);
@@ -20,4 +21,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Long countAllByUpdatedTime(LocalDate date);
     @Query(value = "select sum(price) from products where updatedTime=?1")
     Long sumAllByUpdatedTime(LocalDate date);
+
+
+
+    List<Product> findAllByUpdatedTime(LocalDate localDate);
+
+
+//    List<Product> findDistinctFirstByArticul(Set<Long> articul);
 }
