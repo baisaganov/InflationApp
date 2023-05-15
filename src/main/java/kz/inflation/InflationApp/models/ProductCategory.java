@@ -16,7 +16,7 @@ public class ProductCategory {
     private String name;
 
     @OneToMany(mappedBy = "category")
-    private List<Product> product;
+    private List<Product> products;
 
     public ProductCategory() {
     }
@@ -41,12 +41,12 @@ public class ProductCategory {
         this.name = name;
     }
 
-    public List<Product> getProduct() {
-        return product;
+    public List<Product> getProducts() {
+        return products;
     }
 
-    public void setProduct(List<Product> product) {
-        this.product = product;
+    public void setProducts(List<Product> product) {
+        this.products = product;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class ProductCategory {
         return "ProductCategory{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", product=" + product +
+                ", product=" + products +
                 '}';
     }
 }

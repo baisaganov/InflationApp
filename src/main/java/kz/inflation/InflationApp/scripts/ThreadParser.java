@@ -2,21 +2,18 @@ package kz.inflation.InflationApp.scripts;
 
 import com.google.common.collect.Iterables;
 import kz.inflation.InflationApp.models.Product;
-import kz.inflation.InflationApp.models.ProductCategory;
+import kz.inflation.InflationApp.services.ProductCategoryService;
 import kz.inflation.InflationApp.services.ProductService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.beans.IntrospectionException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,18 +22,23 @@ import java.util.List;
 @Component
 public class ThreadParser implements Runnable {
     private final ProductService productService;
+    private final ProductCategoryService productCategoryService;
+
     private String link;
     private String threadName;
 
     @Autowired
-    public ThreadParser(ProductService productService) {
+    public ThreadParser(ProductService productService, ProductCategoryService productCategoryService) {
         this.productService = productService;
+        this.productCategoryService = productCategoryService;
     }
 
-    public ThreadParser(ProductService productService, String link, String threadName) {
+    public ThreadParser(ProductService productService, ProductCategoryService productCategoryService, String link, String threadName) {
         this.productService = productService;
+        this.productCategoryService = productCategoryService;
         this.threadName = threadName;
         this.link = link;
+
     }
 
     public String getLink() {
@@ -161,6 +163,7 @@ public class ThreadParser implements Runnable {
 
 //            System.out.println("Артикул: " + articul + "; " + name + "; " + price + " Image link: " + imageLink);
             Product product1 = new Product(articul, name, Integer.parseInt(price));
+            product1.setCategory(productCategoryService.getCategory(category));
             productList.add(product1);
         }
 

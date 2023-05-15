@@ -1,5 +1,6 @@
 package kz.inflation.InflationApp.scripts;
 
+import kz.inflation.InflationApp.services.ProductCategoryService;
 import kz.inflation.InflationApp.services.ProductInflationService;
 import kz.inflation.InflationApp.services.ProductService;
 
@@ -20,11 +21,13 @@ public class ProductsParser {
 
     private final ProductService productService;
     private final ProductInflationService productInflationService;
+    private final ProductCategoryService productCategoryService;
 
     @Autowired
-    public ProductsParser(ProductService productService, ProductInflationService productInflationService) {
+    public ProductsParser(ProductService productService, ProductInflationService productInflationService, ProductCategoryService productCategoryService) {
         this.productService = productService;
         this.productInflationService = productInflationService;
+        this.productCategoryService = productCategoryService;
     }
     @Scheduled(initialDelay = 10000, fixedDelay = 1000 * 60 * 60 )
     public void startParsingProducts(){
@@ -51,23 +54,23 @@ public class ProductsParser {
 
         List<ThreadParser> parserList = new ArrayList<ThreadParser>(
                 List.of(
-                        new ThreadParser(productService, milkLink, "milks"),
-                        new ThreadParser(productService, candies,"candies"),
-                        new ThreadParser(productService, fruitsAndVeg, "fruitsAndVeg"),
-                        new ThreadParser(productService, juicesAndWater, "juicesAndWater"),
-                        new ThreadParser(productService, oilsAndSauces, "oilsAndSauces"),
-                        new ThreadParser(productService, pasta, "pasta"),
-                        new ThreadParser(productService, bread, "bread"),
-                        new ThreadParser(productService, sugarAndSpices, "sugarAndSpices"),
-                        new ThreadParser(productService, cannedGoods, "cannedGoods"),
-                        new ThreadParser(productService, meatAndPoultry, "meatAndPoultry"),
-                        new ThreadParser(productService, sausages, "sausages"),
-                        new ThreadParser(productService, teaAndCoffee, "teaAndCoffee"),
-                        new ThreadParser(productService, chipsAndNuts, "chipsAndNuts"),
-                        new ThreadParser(productService, baking, "baking"),
-                        new ThreadParser(productService, frozenFoods, "frozenFoods"),
-                        new ThreadParser(productService, readyMeal, "readyMeal"),
-                        new ThreadParser(productService, seafood, "seafood")
+                        new ThreadParser(productService, productCategoryService, milkLink, "milks"),
+                        new ThreadParser(productService, productCategoryService, candies,"candies"),
+                        new ThreadParser(productService, productCategoryService, fruitsAndVeg, "fruitsAndVeg"),
+                        new ThreadParser(productService, productCategoryService, juicesAndWater, "juicesAndWater"),
+                        new ThreadParser(productService, productCategoryService, oilsAndSauces, "oilsAndSauces"),
+                        new ThreadParser(productService, productCategoryService, pasta, "pasta"),
+                        new ThreadParser(productService, productCategoryService, bread, "bread"),
+                        new ThreadParser(productService, productCategoryService, sugarAndSpices, "sugarAndSpices"),
+                        new ThreadParser(productService, productCategoryService, cannedGoods, "cannedGoods"),
+                        new ThreadParser(productService, productCategoryService, meatAndPoultry, "meatAndPoultry"),
+                        new ThreadParser(productService, productCategoryService, sausages, "sausages"),
+                        new ThreadParser(productService, productCategoryService, teaAndCoffee, "teaAndCoffee"),
+                        new ThreadParser(productService, productCategoryService, chipsAndNuts, "chipsAndNuts"),
+                        new ThreadParser(productService, productCategoryService, baking, "baking"),
+                        new ThreadParser(productService, productCategoryService, frozenFoods, "frozenFoods"),
+                        new ThreadParser(productService, productCategoryService, readyMeal, "readyMeal"),
+                        new ThreadParser(productService, productCategoryService, seafood, "seafood")
                 )
         );
 
