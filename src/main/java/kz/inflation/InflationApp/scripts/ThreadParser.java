@@ -2,15 +2,13 @@ package kz.inflation.InflationApp.scripts;
 
 import com.google.common.collect.Iterables;
 import kz.inflation.InflationApp.models.Product;
+import kz.inflation.InflationApp.models.ProductCategory;
 import kz.inflation.InflationApp.services.ProductService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.openqa.selenium.By;
-import org.openqa.selenium.ElementClickInterceptedException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -57,8 +55,10 @@ public class ThreadParser implements Runnable {
 //
 //        WebDriver driver = new ChromeDriver(options);
 
+
 //        FIREFOX DRIVER
-        System.setProperty("webdriver.gecko.driver", "selenium/geckodriver");
+        System.setProperty("webdriver.gecko.driver", "selenium/geckodriver"); // MAC OS
+//        System.setProperty("webdriver.gecko.driver", "selenium/geckodriverLinux"); // UBUNTU
         FirefoxOptions options = new FirefoxOptions();
         options.addArguments("-headless");
         WebDriver driver = new FirefoxDriver(options);
@@ -75,13 +75,26 @@ public class ThreadParser implements Runnable {
 
         do {
             try {
-                Thread.sleep(10000);
+                Thread.sleep(20000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 
             WebElement first = null;
-            WebElement second = Iterables.getLast(driver.findElement(By.className("pagination")).findElements(By.className("pagination__el")));
+            WebElement second = null;
+            try {
+                second = Iterables.getLast(driver.findElement(By.className("pagination")).findElements(By.className("pagination__el")));
+
+            } catch (NoSuchElementException noElement){
+                driver.navigate().refresh();
+                System.out.println("second element not founded");
+                try {
+                    Thread.sleep(30000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
 
             if (!driver.findElement(By.className("pagination")).findElements(By.className("_disabled")).isEmpty()) {
                 first = Iterables.getLast(driver.findElement(By.className("pagination")).findElements(By.className("_disabled")));
@@ -106,6 +119,12 @@ public class ThreadParser implements Runnable {
                     Iterables.getLast(driver.findElement(By.className("pagination")).findElements(By.className("pagination__el"))).click();
                 } catch (ElementClickInterceptedException e) {
                     System.out.println("Повторная ошибка в клике");
+                    System.out.println(driver.getCurrentUrl());
+                    String[] nextPage = driver.getCurrentUrl().split("=");
+                    if (nextPage.length-1 > 1)
+                        nextPage[nextPage.length-1]= String.valueOf(Integer.parseInt(nextPage[nextPage.length-1])+1);
+                    driver.get(String.join("=", nextPage));
+                    System.out.println(Arrays.toString(nextPage));
                     e.printStackTrace();
                 } catch (InterruptedException e){
                     e.printStackTrace();
@@ -121,6 +140,7 @@ public class ThreadParser implements Runnable {
     public void update(String seleniumDocument){
         Document document = Jsoup.parse(seleniumDocument);
         List<Product> productList = new ArrayList<>();
+        String category = document.getElementsByClass("breadcrumbs__item_disabled").text();
 
         Elements products = document.getElementsByClass("item-card");
         for (Element product : products) {
