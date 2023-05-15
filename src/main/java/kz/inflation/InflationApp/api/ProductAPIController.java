@@ -1,6 +1,7 @@
 package kz.inflation.InflationApp.api;
 
 import kz.inflation.InflationApp.models.Product;
+import kz.inflation.InflationApp.models.ProductInflation;
 import kz.inflation.InflationApp.scripts.ProductsParser;
 import kz.inflation.InflationApp.services.ProductInflationService;
 import kz.inflation.InflationApp.services.ProductService;
@@ -45,5 +46,10 @@ public class ProductAPIController {
     public List<Product> getUniqueProducts(@RequestParam(required = false, defaultValue = "0") int page,
                                            @RequestParam(required = false, defaultValue = "12") int size){
         return productService.getAllUniqueProducts(PageRequest.of(page, size));
+    }
+
+    @GetMapping("/inflation")
+    public List<ProductInflation> productInflations(){
+        return productInflationService.getAllProducts();
     }
 }
