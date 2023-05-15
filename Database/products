@@ -4,7 +4,9 @@ create table products (
     name varchar not null,
     price int not null,
     updated_time timestamp not null
-)
+);
 
 create index products_updated_time_articul_name
     on products(updated_time, articul, name);
+
+alter table products add column cat_id int references product_category(id) ON DELETE SET NULL;
