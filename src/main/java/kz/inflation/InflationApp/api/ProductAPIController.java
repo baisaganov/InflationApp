@@ -1,6 +1,9 @@
 package kz.inflation.InflationApp.api;
 
+import kz.inflation.InflationApp.dto.ProductCategoryDTO;
+import kz.inflation.InflationApp.dto.ProductDTO;
 import kz.inflation.InflationApp.models.Product;
+import kz.inflation.InflationApp.models.ProductCategory;
 import kz.inflation.InflationApp.models.ProductInflation;
 import kz.inflation.InflationApp.scripts.ProductsParser;
 import kz.inflation.InflationApp.services.ProductInflationService;
@@ -9,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -27,29 +31,49 @@ public class ProductAPIController {
     }
 
     @GetMapping("/products/update")
-    public List<Product> updateProducts() {
-        productsParser.startParsingProducts();
-        return productService.getAllProducts();
+    public List<ProductDTO> updateProducts() {
+//        productsParser.startParsingProducts();
+        return convertListToProductDTO(productService.getAllProducts());
     }
 
     @GetMapping("/products")
-    public List<Product> products() {
-        return productService.getAllProducts();
+    public List<ProductDTO> products() {
+        return convertListToProductDTO(productService.getAllProducts());
     }
 
     @GetMapping("/products/{articul}")
-    public List<Product> getProductByArticul(@PathVariable Long articul) {
-        return productService.getAllProductsByArticul(articul);
+    public List<ProductDTO> getProductByArticul(@PathVariable Long articul) {
+        return convertListToProductDTO(productService.getAllProductsByArticul(articul));
     }
 
     @GetMapping("/products/unique")
-    public List<Product> getUniqueProducts(@RequestParam(required = false, defaultValue = "0") int page,
-                                           @RequestParam(required = false, defaultValue = "12") int size){
-        return productService.getAllUniqueProducts(PageRequest.of(page, size));
+    public List<ProductDTO> getUniqueProducts(@RequestParam(required = false, defaultValue = "0") int page,
+                                              @RequestParam(required = false, defaultValue = "12") int size){
+        return convertListToProductDTO(productService.getAllUniqueProducts(PageRequest.of(page, size)));
     }
 
     @GetMapping("/inflation")
     public List<ProductInflation> productInflations(){
         return productInflationService.getAllProducts();
     }
+
+
+    private List<ProductDTO> convertListToProductDTO(List<Product> products) {
+        List<ProductDTO> dtoList = new ArrayList<>();
+        for (Product e : products) {
+            dtoList.add(new ProductDTO(
+                    e.getArticul(),
+                    e.getName(),
+                    e.getPrice(),
+                    e.getUpdatedTime(),
+                    convertToCategoryDTO(e.getCategory())));
+        }
+        return dtoList;
+    }
+
+    private ProductCategoryDTO convertToCategoryDTO(ProductCategory category) {
+        return new ProductCategoryDTO(category.getId(), category.getName());
+    }
+
+
 }
