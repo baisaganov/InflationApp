@@ -13,7 +13,7 @@ public class MainContorller {
         return "index";
     }
 
-    @GetMapping("/inflation")
+    @GetMapping("/inflation-report")
     public String inflationView(){
         return "inflation";
     }

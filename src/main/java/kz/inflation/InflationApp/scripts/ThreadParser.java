@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import kz.inflation.InflationApp.models.Product;
 import kz.inflation.InflationApp.services.ProductCategoryService;
 import kz.inflation.InflationApp.services.ProductService;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -11,15 +12,18 @@ import org.jsoup.select.Elements;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 
-@Component
+@Component @Slf4j
 public class ThreadParser implements Runnable {
     private final ProductService productService;
     private final ProductCategoryService productCategoryService;
@@ -48,7 +52,6 @@ public class ThreadParser implements Runnable {
     public void seleniumGetLinks() {
         // CHROME DRIVER
 //        System.setProperty("webdriver.chrome.driver", "selenium/chromedriver");
-////        System.setProperty("webdriver.chrome.driver", "selenium/chromedriver114");
 //        System.setProperty("webdriver.chrome.whitelistedIps", "");
 //
 //        ChromeOptions options = new ChromeOptions();
@@ -59,11 +62,21 @@ public class ThreadParser implements Runnable {
 
 
 //        FIREFOX DRIVER
-        System.setProperty("webdriver.gecko.driver", "selenium/geckodriver"); // MAC OS
-//        System.setProperty("webdriver.gecko.driver", "selenium/geckodriverLinux"); // UBUNTU
+//        System.setProperty("webdriver.gecko.driver", "selenium/geckodriver"); // MAC OS
+//        System.setProperty("webdriver.gecko.driver", "selenium/geckodriver"); // UBUNTU
+//        System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver"); // UBUNTU
         FirefoxOptions options = new FirefoxOptions();
         options.addArguments("-headless");
-        WebDriver driver = new FirefoxDriver(options);
+        options.addPreference("--log", "error");
+        WebDriver driver = null;
+//        try {
+//            driver = new RemoteWebDriver(new URL("https://www.google.com/"), options);
+//        } catch (MalformedURLException e) {
+//            throw new RuntimeException(e);
+//        }
+
+        driver = new FirefoxDriver(options);
+
 
         driver.get(this.link);
 
@@ -82,27 +95,27 @@ public class ThreadParser implements Runnable {
                 e.printStackTrace();
             }
 
-            WebElement first = null;
-            WebElement second = null;
+            WebElement disabledPaginationButton = null;
+            WebElement nextButton = null;
             try {
-                second = Iterables.getLast(driver.findElement(By.className("pagination")).findElements(By.className("pagination__el")));
+                nextButton = Iterables.getLast(driver.findElement(By.className("pagination")).findElements(By.className("pagination__el")));
 
             } catch (NoSuchElementException noElement){
                 driver.navigate().refresh();
-                System.out.println("second element not founded");
+                System.out.println("nextButton element not founded in " + threadName);
                 try {
                     Thread.sleep(30000);
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
                 }
 
             }
 
             if (!driver.findElement(By.className("pagination")).findElements(By.className("_disabled")).isEmpty()) {
-                first = Iterables.getLast(driver.findElement(By.className("pagination")).findElements(By.className("_disabled")));
+                disabledPaginationButton = Iterables.getLast(driver.findElement(By.className("pagination")).findElements(By.className("_disabled")));
             }
 
-            if(first != null && first.equals(second))
+            if(disabledPaginationButton != null && disabledPaginationButton.equals(nextButton))
                 switcher = false;
 
             update(driver.getPageSource());
@@ -135,8 +148,7 @@ public class ThreadParser implements Runnable {
         } while (switcher);
 
         driver.quit();
-        System.out.println(threadName + " is done working");
-
+        log.info(threadName + " thread is done working");
     }
 
     public void update(String seleniumDocument){
@@ -159,8 +171,7 @@ public class ThreadParser implements Runnable {
                     .split("Цена")[1]
                     .replaceAll("[^0-9]", "");
 
-            String imageLink = product.getElementsByClass("item-card__image").attr("src");
-
+//            String imageLink = product.getElementsByClass("item-card__image").attr("src");
 //            System.out.println("Артикул: " + articul + "; " + name + "; " + price + " Image link: " + imageLink);
             Product product1 = new Product(articul, name, Integer.parseInt(price));
             product1.setCategory(productCategoryService.getCategory(category));
@@ -174,5 +185,9 @@ public class ThreadParser implements Runnable {
     @Override
     public void run() {
         seleniumGetLinks();
+    }
+
+    public String getThreadName() {
+        return threadName;
     }
 }

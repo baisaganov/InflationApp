@@ -4,6 +4,7 @@ import kz.inflation.InflationApp.services.ProductCategoryService;
 import kz.inflation.InflationApp.services.ProductInflationService;
 import kz.inflation.InflationApp.services.ProductService;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,7 @@ import java.util.concurrent.*;
 /*
     TODO: Поставить таймер на выполнение потока
 */
-@Component
+@Component @Slf4j
 public class ProductsParser {
 
     private final ProductService productService;
@@ -29,9 +30,11 @@ public class ProductsParser {
         this.productInflationService = productInflationService;
         this.productCategoryService = productCategoryService;
     }
-    @Scheduled(initialDelay = 10000, fixedDelay = 1000 * 60 * 60 )
+
+//    @Scheduled(initialDelay = 20000, fixedDelay = 1000 * 60 * 60 * 24 )
     public void startParsingProducts(){
-        ExecutorService service = Executors.newFixedThreadPool(1);
+        log.info(System.getProperty("user.dir"));
+        ExecutorService service = Executors.newFixedThreadPool(4);
 
         String milkLink = "https://kaspi.kz/shop/nur-sultan/c/dairy%20and%20eggs/?q=%3Acategory%3ADairy%20and%20eggs%3AallMerchants%3AMagnum&sort=relevance&sc=";
         String candies = "https://kaspi.kz/shop/nur-sultan/c/pastry/?q=%3Acategory%3APastry%3AallMerchants%3AMagnum&sort=relevance&sc=";
@@ -77,6 +80,8 @@ public class ProductsParser {
         try {
             for (ThreadParser parser: parserList) {
                 futureList.add(service.submit(parser));
+                log.info("Thread " + parser.getThreadName() + " started");
+                Thread.sleep(3333);
             }
         } catch (Exception e){
             e.printStackTrace();
@@ -85,19 +90,28 @@ public class ProductsParser {
         for (Future<?> future : futureList) {
             try {
                 future.get();
+                Thread.sleep(3333);
             } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
+                log.error(e.getLocalizedMessage());
             }
         }
 
         service.shutdown();
         try {
-            service.awaitTermination(2, TimeUnit.HOURS);
+            service.awaitTermination(4, TimeUnit.HOURS);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        log.info("Updating not parsed products");
+        long start = System.currentTimeMillis();
         productService.saveNotUpdatedItems();
+        log.info("Update done in " + (System.currentTimeMillis()-start));
+
+        start = System.currentTimeMillis();
+        log.info("Updating inflation information");
         productInflationService.updateData();
+        log.info("Update done in " + (System.currentTimeMillis()-start));
 
 
     }

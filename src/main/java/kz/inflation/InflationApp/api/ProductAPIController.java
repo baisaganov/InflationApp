@@ -32,7 +32,7 @@ public class ProductAPIController {
 
     @GetMapping("/products/update")
     public List<ProductDTO> updateProducts() {
-//        productsParser.startParsingProducts();
+        productsParser.startParsingProducts();
         return convertListToProductDTO(productService.getAllProducts());
     }
 

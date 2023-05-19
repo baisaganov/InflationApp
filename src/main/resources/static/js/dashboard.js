@@ -6,7 +6,7 @@
     feather.replace({'aria-hidden': 'true'})
     // Data from server
 
-    let response = await fetch("http://localhost:8080/api" + window.location.pathname)
+    let response = await fetch(window.location.origin+"/api" + window.location.pathname)
     let content = await response.json()
     let labelList = []
     let priceList = []
