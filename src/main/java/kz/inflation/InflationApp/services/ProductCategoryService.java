@@ -20,6 +20,6 @@ public class ProductCategoryService{
 
 
     public ProductCategory getCategory(String category) {
-        return productCategoryRepository.findFirstByName(category);
+        return productCategoryRepository.findFirstByNameLike(category);
     }
 }

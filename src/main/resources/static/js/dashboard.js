@@ -53,7 +53,7 @@
     })
 
     // List
-    let prevPrice
+    let prevPrice, colorized, sign
     console.log(content)
     for (let key = 0; key < content.length; key++){
         const currentPrice = content[key].price
@@ -63,13 +63,23 @@
             prevPrice = content[key-1].price
         }
         let changedValue = currentPrice - prevPrice
-        let changedPercent = ((currentPrice - prevPrice)/currentPrice*100).toFixed(2)
+        let changedPercent = (changedValue/currentPrice*100).toFixed(2)
+
+        if(Math.sign(changedValue) === 1){
+            colorized = '<td class="text-danger">'
+            sign = '+'
+        } else if (Math.sign(changedValue) === 0){
+            colorized = '<td class="text-secondary">'
+            sign = ''
+        } else {
+            colorized = '<td class="text-success">'
+        }
 
         list.innerHTML =       '<tr>\n' +
             '                        <td>' + content[key].updatedTime + '</td>\n' +
-            '                        <td>' + currentPrice + ' тг.</td>\n' +
-            '                        <td>' + changedValue + ' тг.</td>\n' +
-            '                        <td>' + changedPercent + '% </td>\n' +
+            '                        <td>'  + currentPrice + ' тг.</td>\n' +
+            colorized + sign + changedValue + ' тг.</td>\n' +
+            colorized + sign + changedPercent + '% </td>\n' +
             '                    </tr>' + list.innerHTML
     }
 })()

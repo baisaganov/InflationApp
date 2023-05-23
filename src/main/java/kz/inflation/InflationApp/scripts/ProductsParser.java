@@ -31,77 +31,54 @@ public class ProductsParser {
         this.productCategoryService = productCategoryService;
     }
 
-//    @Scheduled(initialDelay = 20000, fixedDelay = 1000 * 60 * 60 * 24 )
-    public void startParsingProducts(){
+
+//    @Scheduled(initialDelay = 20000, fixedDelay = 1000*60*60*24)
+    public void singleThread() throws InterruptedException {
         log.info(System.getProperty("user.dir"));
-        ExecutorService service = Executors.newFixedThreadPool(4);
-
-        String milkLink = "https://kaspi.kz/shop/nur-sultan/c/dairy%20and%20eggs/?q=%3Acategory%3ADairy%20and%20eggs%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String candies = "https://kaspi.kz/shop/nur-sultan/c/pastry/?q=%3Acategory%3APastry%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String fruitsAndVeg = "https://kaspi.kz/shop/nur-sultan/c/fruits%20and%20vegetables/?q=%3Acategory%3AFruits%20and%20vegetables%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String juicesAndWater = "https://kaspi.kz/shop/nur-sultan/c/water%20and%20beverages/?q=%3Acategory%3AWater%20and%20beverages%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String pasta = "https://kaspi.kz/shop/nur-sultan/c/grains%20and%20pasta/?q=%3Acategory%3AGrains%20and%20pasta%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String oilsAndSauces = "https://kaspi.kz/shop/nur-sultan/c/spices%20and%20seasoning/?q=%3Acategory%3ASpices%20and%20seasoning%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String bread = "https://kaspi.kz/shop/nur-sultan/c/bread%20and%20bakery/?q=%3Acategory%3ABread%20and%20bakery%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String sugarAndSpices = "https://kaspi.kz/shop/nur-sultan/c/sugar%20salt%20spices/?q=%3Acategory%3ASugar%20salt%20spices%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String cannedGoods = "https://kaspi.kz/shop/nur-sultan/c/canned%20goods/?q=%3Acategory%3ACanned%20goods%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String meatAndPoultry = "https://kaspi.kz/shop/nur-sultan/c/meat%20and%20poultry/?q=%3Acategory%3AMeat%20and%20poultry%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String sausages = "https://kaspi.kz/shop/nur-sultan/c/sausages%20and%20meat%20delicacies/?q=%3Acategory%3ASausages%20and%20meat%20delicacies%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String teaAndCoffee = "https://kaspi.kz/shop/nur-sultan/c/tea%20and%20coffee/?q=%3Acategory%3ATea%20and%20coffee%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String chipsAndNuts = "https://kaspi.kz/shop/nur-sultan/c/chips%20and%20nuts/?q=%3Acategory%3AChips%20and%20nuts%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String baking = "https://kaspi.kz/shop/nur-sultan/c/everything%20for%20baking/?q=%3Acategory%3AEverything%20for%20baking%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String frozenFoods = "https://kaspi.kz/shop/nur-sultan/c/frozen%20foods/?q=%3Acategory%3AFrozen%20foods%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String readyMeal = "https://kaspi.kz/shop/nur-sultan/c/ready%20meal/?q=%3Acategory%3AReady%20meal%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        String seafood = "https://kaspi.kz/shop/nur-sultan/c/seafood/?q=%3Acategory%3ASeafood%3AallMerchants%3AMagnum&sort=relevance&sc=";
-        List<Future<?>> futureList = new ArrayList<>();
-
-        List<ThreadParser> parserList = new ArrayList<ThreadParser>(
-                List.of(
-                        new ThreadParser(productService, productCategoryService, milkLink, "milks"),
-                        new ThreadParser(productService, productCategoryService, candies,"candies"),
-                        new ThreadParser(productService, productCategoryService, fruitsAndVeg, "fruitsAndVeg"),
-                        new ThreadParser(productService, productCategoryService, juicesAndWater, "juicesAndWater"),
-                        new ThreadParser(productService, productCategoryService, oilsAndSauces, "oilsAndSauces"),
-                        new ThreadParser(productService, productCategoryService, pasta, "pasta"),
-                        new ThreadParser(productService, productCategoryService, bread, "bread"),
-                        new ThreadParser(productService, productCategoryService, sugarAndSpices, "sugarAndSpices"),
-                        new ThreadParser(productService, productCategoryService, cannedGoods, "cannedGoods"),
-                        new ThreadParser(productService, productCategoryService, meatAndPoultry, "meatAndPoultry"),
-                        new ThreadParser(productService, productCategoryService, sausages, "sausages"),
-                        new ThreadParser(productService, productCategoryService, teaAndCoffee, "teaAndCoffee"),
-                        new ThreadParser(productService, productCategoryService, chipsAndNuts, "chipsAndNuts"),
-                        new ThreadParser(productService, productCategoryService, baking, "baking"),
-                        new ThreadParser(productService, productCategoryService, frozenFoods, "frozenFoods"),
-                        new ThreadParser(productService, productCategoryService, readyMeal, "readyMeal"),
-                        new ThreadParser(productService, productCategoryService, seafood, "seafood")
-                )
-        );
+        List<String> list = new ArrayList<>();
+        list.add("http://kaspi.kz/shop/nur-sultan/c/dairy%20and%20eggs/?q=%3Acategory%3ADairy%20and%20eggs%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/pastry/?q=%3Acategory%3APastry%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/fruits%20and%20vegetables/?q=%3Acategory%3AFruits%20and%20vegetables%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/water%20and%20beverages/?q=%3Acategory%3AWater%20and%20beverages%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/grains%20and%20pasta/?q=%3Acategory%3AGrains%20and%20pasta%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/spices%20and%20seasoning/?q=%3Acategory%3ASpices%20and%20seasoning%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/bread%20and%20bakery/?q=%3Acategory%3ABread%20and%20bakery%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/sugar%20salt%20spices/?q=%3Acategory%3ASugar%20salt%20spices%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/canned%20goods/?q=%3Acategory%3ACanned%20goods%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/meat%20and%20poultry/?q=%3Acategory%3AMeat%20and%20poultry%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/sausages%20and%20meat%20delicacies/?q=%3Acategory%3ASausages%20and%20meat%20delicacies%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/tea%20and%20coffee/?q=%3Acategory%3ATea%20and%20coffee%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/chips%20and%20nuts/?q=%3Acategory%3AChips%20and%20nuts%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/everything%20for%20baking/?q=%3Acategory%3AEverything%20for%20baking%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/frozen%20foods/?q=%3Acategory%3AFrozen%20foods%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/ready%20meal/?q=%3Acategory%3AReady%20meal%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/seafood/?q=%3Acategory%3ASeafood%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        list.add("http://kaspi.kz/shop/nur-sultan/c/seafood/?q=%3Acategory%3ASeafood%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        Thread thread1 = new Thread(new ThreadParser(productService, productCategoryService, list.subList(0, 6)));
+        Thread thread2 = new Thread(new ThreadParser(productService, productCategoryService, list.subList(6, 13)));
+        Thread thread3 = new Thread(new ThreadParser(productService, productCategoryService, list.subList(13, 17)));
 
         try {
-            for (ThreadParser parser: parserList) {
-                futureList.add(service.submit(parser));
-                log.info("Thread " + parser.getThreadName() + " started");
-                Thread.sleep(3333);
-            }
+            thread1.start();
         } catch (Exception e){
-            e.printStackTrace();
+            log.error("Thread1 error" + e.getLocalizedMessage());
         }
 
-        for (Future<?> future : futureList) {
-            try {
-                future.get();
-                Thread.sleep(3333);
-            } catch (InterruptedException | ExecutionException e) {
-                log.error(e.getLocalizedMessage());
-            }
-        }
-
-        service.shutdown();
         try {
-            service.awaitTermination(4, TimeUnit.HOURS);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            thread2.start();
+        } catch (Exception e){
+            log.error("Thread2 error" + e.getLocalizedMessage());
         }
+
+        try {
+            thread3.start();
+        } catch (Exception e){
+            log.error("Thread3 error" + e.getLocalizedMessage());
+        }
+        thread1.join();
+        thread2.join();
+        thread3.join();
+
 
         log.info("Updating not parsed products");
         long start = System.currentTimeMillis();
@@ -112,7 +89,6 @@ public class ProductsParser {
         log.info("Updating inflation information");
         productInflationService.updateData();
         log.info("Update done in " + (System.currentTimeMillis()-start));
-
 
     }
 }

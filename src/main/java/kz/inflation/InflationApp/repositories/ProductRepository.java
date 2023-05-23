@@ -15,18 +15,23 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findProductsByArticulOrderByUpdatedTimeAsc(Long articul);
 
 
-    Product getDistinctFirstByArticulOrderByUpdatedTimeAsc(Long articul);
+    Product getDistinctFirstByArticulOrderByUpdatedTimeDesc(Long articul);
 
     @Query(value = "SELECT distinct articul from products")
     List<Long> selectDistinctArticul(PageRequest pageRequest);
+
+    @Query(value = "SELECT distinct articul from products")
+    List<Long> selectAllDistinctArticul();
 
     Long countAllByUpdatedTime(LocalDate date);
     @Query(value = "select sum(price) from products where updatedTime=?1")
     Long sumAllByUpdatedTime(LocalDate date);
 
-
+    List<Product> findDistinctTop2ByArticulOrderByUpdatedTimeDesc(Long articul);
 
     List<Product> findAllByUpdatedTime(LocalDate localDate);
+
+
 
 
 //    List<Product> findDistinctFirstByArticul(Set<Long> articul);

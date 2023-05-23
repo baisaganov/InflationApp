@@ -1,6 +1,8 @@
 package kz.inflation.InflationApp.services;
 
+import kz.inflation.InflationApp.dto.ProductDTO;
 import kz.inflation.InflationApp.models.Product;
+import kz.inflation.InflationApp.models.ProductCategory;
 import kz.inflation.InflationApp.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -32,17 +34,39 @@ public class ProductService {
         return repository.findAll();
     }
 
+    public List<Long> getAllUniqueArticuls(){
+        return repository.selectAllDistinctArticul();
+    }
+
     public List<Product> getAllUniqueProducts(PageRequest pageRequest){
         var articulList = repository.selectDistinctArticul(pageRequest);
         List<Product> products = new ArrayList<>();
         for (Long articul : articulList) {
-            products.add(repository.getDistinctFirstByArticulOrderByUpdatedTimeAsc(articul));
+            products.add(repository.getDistinctFirstByArticulOrderByUpdatedTimeDesc(articul));
         }
         return products;
     }
 
     public List<Product> getAllProductsByArticul(Long articul){
         return repository.findProductsByArticulOrderByUpdatedTimeAsc(articul);
+    }
+
+    public List<Product> findTop2(Long articul){
+        List<Product> productList = repository.findDistinctTop2ByArticulOrderByUpdatedTimeDesc(articul);
+        if(productList.size() > 1 && productList.get(0).getPrice() !=  productList.get(1).getPrice())
+            return productList;
+        return null;
+    }
+
+    public List<List<Product>> lastPriceChangeItems(){
+        List<List<Product>> list = new ArrayList<>();
+        List<Long> articuls =  this.getAllUniqueArticuls();
+        for (Long articul : articuls) {
+            List<Product> productList = this.findTop2(articul);
+            if (productList != null)
+                list.add(productList);
+        }
+        return list;
     }
 
 
@@ -69,10 +93,17 @@ public class ProductService {
         // - [ ] Выбрать только уникальные артикулы не обновленные за сегодня
         List<Product> products = new ArrayList<>();
         for (Product e : allProducts) {
-            products.add(
-                    new Product(e.getArticul(), e.getName(), e.getPrice(), LocalDate.now())
-            );
+            Product product = new Product(e.getArticul(), e.getName(), e.getPrice(), LocalDate.now());
+            ProductCategory category = e.getCategory();
+            product.setCategory(category);
+            products.add(product);
         }
         repository.saveAll(products);
     }
+
+    public Product getProductByArticul(Long articul){
+        return repository.getDistinctFirstByArticulOrderByUpdatedTimeDesc(articul);
+    }
+
+
 }

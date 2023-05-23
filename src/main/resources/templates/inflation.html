@@ -248,40 +248,58 @@
             <div class="accordion" id="accordionPanelsStayOpenExample">
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="false" aria-controls="panelsStayOpen-collapseOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
                             График продуктовой инфляции
                         </button>
                     </h2>
-                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse ">
+                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
                         <div class="accordion-body">
-                            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                                <h1 class="h2">Dashboard</h1>
-                                <div class="btn-toolbar mb-2 mb-md-0">
-                                    <div class="btn-group me-2">
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Поделиться</button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary">Экспортировать</button>
-                                    </div>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar align-text-bottom" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                        This week
-                                    </button>
-                                </div>
-                            </div>
+<!--                            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">-->
+<!--                                <h1 class="h2">Dashboard</h1>-->
+<!--                                <div class="btn-toolbar mb-2 mb-md-0">-->
+<!--                                    <div class="btn-group me-2">-->
+<!--                                        <button type="button" class="btn btn-sm btn-outline-secondary">Поделиться</button>-->
+<!--                                        <button type="button" class="btn btn-sm btn-outline-secondary">Экспортировать</button>-->
+<!--                                    </div>-->
+<!--                                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">-->
+<!--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar align-text-bottom" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>-->
+<!--                                        This week-->
+<!--                                    </button>-->
+<!--                                </div>-->
+<!--                            </div>-->
 
                             <canvas class="my-4 w-100" id="productsInflation" width="1180" height="498" style="display: block; box-sizing: border-box; height: 249px; width: 590px;"></canvas>
 
-                            <h2>Статистика изменения цен</h2>
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <h4 class="mb-1">Топ роста</h4>
+                                        <div class="list-group" id="growthTop">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-sm">
+                                        <h4 class="mb-1">Топ падения</h4>
+                                        <div class="list-group" id="fallTop">
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <br />
+                            </div>
+
+                            <h3>История изменения индекса</h3>
                             <div class="table-responsive">
                                 <table class="table table-striped table-sm">
                                     <thead>
                                     <tr>
                                         <th scope="col">Дата</th>
-                                        <th scope="col">Цена</th>
-                                        <th scope="col">Изменение (тг)</th>
+                                        <th scope="col">Значение</th>
+                                        <th scope="col">Изменение</th>
                                         <th scope="col">Изменение (%)</th>
                                     </tr>
                                     </thead>
-                                    <tbody class="productsInfo">
+                                    <tbody class="productsInflation">
 
                                     </tbody>
                                 </table>
@@ -325,6 +343,7 @@
 <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js" integrity="sha384-gdQErvCNWvHQZj6XZM0dNsAoY4v+j5P1XDpNkcM3HJG1Yx04ecqIHk7+4VBOCHOG" crossorigin="anonymous"></script>
 <script src="/js/inflationDashboards.js"></script>
+<script src="/js/growthAndFallTop.js"></script>
 
 
 </body></html>

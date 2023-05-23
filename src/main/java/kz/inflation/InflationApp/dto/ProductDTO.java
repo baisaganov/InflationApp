@@ -10,6 +10,8 @@ public class ProductDTO {
     private int price;
     private LocalDate updatedTime;
     private ProductCategoryDTO category;
+    private int changeValue = 0;
+    private double changePercent = 0.0;
 
     public ProductDTO() {
     }
@@ -60,5 +62,21 @@ public class ProductDTO {
 
     public void setUpdatedTime(LocalDate updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    public int getChangeValue() {
+        return changeValue;
+    }
+
+    public void setChangeValue(int changeValue) {
+        this.changeValue = changeValue;
+    }
+
+    public double getChangePercent() {
+        return changePercent;
+    }
+
+    public void setChangePercent(double changePercent) {
+        this.changePercent = changePercent;
     }
 }

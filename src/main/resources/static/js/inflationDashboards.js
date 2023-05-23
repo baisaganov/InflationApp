@@ -10,7 +10,6 @@
     let content = await response.json()
     let labelList = []
     let priceList = []
-    let list = document.querySelector('.productsInfo')
     for (let key in content){
         const currentPrice = content[key].averagePrice
         priceList.push(currentPrice)
@@ -27,7 +26,7 @@
         data: {
             labels: labelList,
             datasets: [{
-                label: content[0].name,
+                label: "Индекс инфляции",
                 data: priceList,
                 lineTension: 0,
                 backgroundColor: 'transparent',
@@ -51,4 +50,38 @@
             }
         }
     })
+
+    // List
+    let prevPrice, colorized, sign
+    let list = document.querySelector('.productsInflation')
+    for (let key = 0; key < content.length; key++){
+        const currentPrice = content[key].averagePrice
+        if (key===0){
+            prevPrice = content[key].averagePrice
+        } else {
+            prevPrice = content[key-1].averagePrice
+        }
+        let changedValue = currentPrice - prevPrice
+        let changedPercent = (changedValue/currentPrice*100).toFixed(2)
+        if(Math.sign(changedValue) === 1){
+            colorized = '<td class="text-danger">'
+            sign = '+'
+        } else if (Math.sign(changedValue) === 0){
+            colorized = '<td class="text-secondary">'
+            sign = ''
+        } else {
+            colorized = '<td class="text-success">'
+            sign = '-'
+        }
+
+        list.innerHTML =       '<tr>\n' +
+            '                        <td>' + content[key].updatedTime + '</td>\n' +
+            '                        <td>'  + currentPrice + ' тг.</td>\n' +
+            colorized + sign + changedValue + ' тг.</td>\n' +
+            colorized + sign + changedPercent + '% </td>\n' +
+            '                    </tr>' + list.innerHTML
+
+    }
+
+
 })()
