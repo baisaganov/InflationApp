@@ -102,7 +102,7 @@
             prevPrice = mzpContent[key-1].value
         }
         let changedValue = currentPrice - prevPrice
-        let changedPercent = ((currentPrice - prevPrice)/currentPrice*100).toFixed(2)
+        let changedPercent = ((currentPrice / prevPrice) * 100).toFixed(2)
 
         listMzp.innerHTML =       '<tr>\n' +
             '                        <td>' + mzpContent[key].year + '</td>\n' +

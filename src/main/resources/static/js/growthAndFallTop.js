@@ -44,7 +44,7 @@
             '                <h6 class="mb-1">'+ topFall[key].name + '</h6>\n' +
             '                <small>' + topFall[key].price + ' тг.</small>\n' +
             '                </div>\n' +
-            '                <p class="mb-1 ">Изменение: <span class="badge rounded-pill text-bg-success">-' + topFall[key].changeValue + ' тг. (' + topFall[key].changePercent.toFixed(2) + '%)</span></p>\n' +
+            '                <p class="mb-1 ">Изменение: <span class="badge rounded-pill text-bg-success">' + topFall[key].changeValue + ' тг. (' + topFall[key].changePercent.toFixed(2) + '%)</span></p>\n' +
             '                <small>Артикул: ' + topFall[key].articul +'</small>\n' +
             '                </a>'
     }

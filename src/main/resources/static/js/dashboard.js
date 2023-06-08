@@ -63,16 +63,18 @@
             prevPrice = content[key-1].price
         }
         let changedValue = currentPrice - prevPrice
-        let changedPercent = (changedValue/currentPrice*100).toFixed(2)
+        let changedPercent = ((currentPrice / prevPrice) * 100).toFixed(2)
 
         if(Math.sign(changedValue) === 1){
             colorized = '<td class="text-danger">'
             sign = '+'
+            console.log(changedValue + Math.sign(changedValue))
         } else if (Math.sign(changedValue) === 0){
             colorized = '<td class="text-secondary">'
             sign = ''
         } else {
             colorized = '<td class="text-success">'
+            sign = ''
         }
 
         list.innerHTML =       '<tr>\n' +
