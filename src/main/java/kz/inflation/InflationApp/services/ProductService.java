@@ -38,8 +38,9 @@ public class ProductService {
         return repository.selectAllDistinctArticul();
     }
 
-    public List<Product> getAllUniqueProducts(PageRequest pageRequest){
-        var articulList = repository.selectDistinctArticul(pageRequest);
+    public List<Product> getAllUniqueProducts(PageRequest pageRequest, int category){
+        List<Long> articulList = category == 0 ? repository.selectDistinctArticul(pageRequest) : repository.selectDistinctArticul(category, pageRequest);
+
         List<Product> products = new ArrayList<>();
         for (Long articul : articulList) {
             products.add(repository.getDistinctFirstByArticulOrderByUpdatedTimeDesc(articul));
@@ -99,6 +100,29 @@ public class ProductService {
             products.add(product);
         }
         repository.saveAll(products);
+    }
+
+    @Transactional
+    public void saveNotUpdatedItems2(){
+        // - [a] Выбрать все уникальные артикулы (select distinct articul from products;)
+        List<Long> allArticuls = repository.selectAllDistinctArticul();
+        // - [b] Выбрать только те артикулы которые обновлены за сегодня(select distinct articul from products where updated_time='2023-05-15';)
+        List<Long> todayArticuls = repository.selectAllDistinctArticulByDate(LocalDate.now());
+        // - [ ] Исключить сегодняшние данные из выборки по артикулу и оставить только не обновленные  (b-a)
+        allArticuls.removeAll(todayArticuls);
+        // - [ ] Получить продукты по оставшимся артикулам с сортировкой DESC и сохранить текущим числом
+        List<Product> updatedProductList = new ArrayList<>();
+        for (Long articul : allArticuls) {
+            Product product = repository.findDistinctByArticulOrderByUpdatedTimeDesc(articul);
+            Product newProduct = new Product(
+                    product.getArticul(),
+                    product.getName(),
+                    product.getPrice(),
+                    LocalDate.now()
+            );
+            updatedProductList.add(newProduct);
+        }
+        repository.saveAll(updatedProductList);
     }
 
     public Product getProductByArticul(Long articul){
