@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 public class ProductCategoryService{
@@ -21,5 +23,9 @@ public class ProductCategoryService{
 
     public ProductCategory getCategory(String category) {
         return productCategoryRepository.findFirstByNameLike(category);
+    }
+
+    public List<ProductCategory> findAll(){
+        return productCategoryRepository.findAll();
     }
 }
