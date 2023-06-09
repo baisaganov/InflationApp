@@ -1,17 +1,23 @@
 package kz.inflation.InflationApp.scripts;
 
+import kz.inflation.InflationApp.dto.ProductCategoryDTO;
+import kz.inflation.InflationApp.dto.ProductDTO;
+import kz.inflation.InflationApp.models.ChangedProduct;
+import kz.inflation.InflationApp.models.Product;
+import kz.inflation.InflationApp.models.ProductCategory;
+import kz.inflation.InflationApp.services.ChangedProductService;
 import kz.inflation.InflationApp.services.ProductCategoryService;
 import kz.inflation.InflationApp.services.ProductInflationService;
 import kz.inflation.InflationApp.services.ProductService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
 
 
 /*
@@ -23,17 +29,22 @@ public class ProductsParser {
     private final ProductService productService;
     private final ProductInflationService productInflationService;
     private final ProductCategoryService productCategoryService;
+    private final ChangedProductService changedProductService;
+
 
     @Autowired
-    public ProductsParser(ProductService productService, ProductInflationService productInflationService, ProductCategoryService productCategoryService) {
+    public ProductsParser(ProductService productService, ProductInflationService productInflationService, ProductCategoryService productCategoryService, ChangedProductService changedProductService) {
         this.productService = productService;
         this.productInflationService = productInflationService;
         this.productCategoryService = productCategoryService;
+        this.changedProductService = changedProductService;
     }
 
 
-//    @Scheduled(initialDelay = 20000, fixedDelay = 1000*60*60*24)
+    @Scheduled(initialDelay = 1000*60*60*9, fixedDelay = 1000*60*60*24)
     public void singleThread() throws InterruptedException {
+        long parsingProductsTimeStart = System.currentTimeMillis();
+        log.info("Parsing products started");
         log.info(System.getProperty("user.dir"));
         List<String> list = new ArrayList<>();
         list.add("http://kaspi.kz/shop/nur-sultan/c/dairy%20and%20eggs/?q=%3Acategory%3ADairy%20and%20eggs%3AallMerchants%3AMagnum&sort=relevance&sc=");
@@ -79,10 +90,11 @@ public class ProductsParser {
         thread2.join();
         thread3.join();
 
+        log.info("Parsing done in:" + (((System.currentTimeMillis() - parsingProductsTimeStart)/60)/60) + " minutes");
 
         log.info("Updating not parsed products");
         long start = System.currentTimeMillis();
-        productService.saveNotUpdatedItems();
+        productService.saveNotUpdatedItems2();
         log.info("Update done in " + (System.currentTimeMillis()-start));
 
         start = System.currentTimeMillis();
@@ -90,5 +102,50 @@ public class ProductsParser {
         productInflationService.updateData();
         log.info("Update done in " + (System.currentTimeMillis()-start));
 
+        this.lastChangeUpdate();
+    }
+
+    private void lastChangeUpdate(){
+        log.info("Updating changed product list");
+        long start = System.currentTimeMillis();
+        List<List<Product>> list = productService.lastPriceChangeItems();
+        List<ChangedProduct> changedProductList = new ArrayList<>();
+        for (List<Product> products : list) {
+            int priceChangeValue = products.get(0).getPrice() - products.get(1).getPrice();
+            double priceChangePercent = (((double)products.get(0).getPrice() / products.get(1).getPrice()) * 100);
+            ProductDTO productDTO = convertListToProductDTO(products).get(0);
+            ChangedProduct changedProduct = new ChangedProduct(
+                    Math.toIntExact(productDTO.getArticul()),
+                    productDTO.getName(),
+                    productDTO.getPrice(),
+                    productDTO.getUpdatedTime(),
+                    Math.toIntExact(productDTO.getCategory().getId()),
+                    productDTO.getCategory().getName(),
+                    priceChangeValue,
+                    priceChangePercent
+            );
+            changedProductList.add(changedProduct);
+        }
+        changedProductService.resetTable();
+        changedProductService.saveAllChangedProduct(changedProductList);
+        log.info("Update done in " + (System.currentTimeMillis()-start));
+
+    }
+
+    private List<ProductDTO> convertListToProductDTO(List<Product> products) {
+        List<ProductDTO> dtoList = new ArrayList<>();
+        for (Product e : products) {
+            dtoList.add(new ProductDTO(
+                    e.getArticul(),
+                    e.getName(),
+                    e.getPrice(),
+                    e.getUpdatedTime(),
+                    convertToCategoryDTO(e.getCategory())));
+        }
+        return dtoList;
+    }
+
+    private ProductCategoryDTO convertToCategoryDTO(ProductCategory category) {
+        return new ProductCategoryDTO(category.getId(), category.getName());
     }
 }
