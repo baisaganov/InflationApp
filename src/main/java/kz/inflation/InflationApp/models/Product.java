@@ -1,9 +1,11 @@
 package kz.inflation.InflationApp.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity(name = "products")
 public class Product {
@@ -23,6 +25,10 @@ public class Product {
 
     @Column(name = "updated_time")
     private LocalDate updatedTime;
+
+    @ManyToOne()
+    @JoinColumn(name = "cat_id", referencedColumnName = "id")
+    private ProductCategory category;
 
     public Product() {
     }
@@ -78,5 +84,26 @@ public class Product {
 
     public void setUpdatedTime(LocalDate updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return articul.equals(product.articul);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(articul);
+    }
+
+    public ProductCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(ProductCategory category) {
+        this.category = category;
     }
 }

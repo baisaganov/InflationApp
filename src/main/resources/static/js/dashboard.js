@@ -6,7 +6,7 @@
     feather.replace({'aria-hidden': 'true'})
     // Data from server
 
-    let response = await fetch("http://localhost:8080/api" + window.location.pathname)
+    let response = await fetch(window.location.origin+"/api" + window.location.pathname)
     let content = await response.json()
     let labelList = []
     let priceList = []
@@ -53,7 +53,7 @@
     })
 
     // List
-    let prevPrice
+    let prevPrice, colorized, sign
     console.log(content)
     for (let key = 0; key < content.length; key++){
         const currentPrice = content[key].price
@@ -63,13 +63,25 @@
             prevPrice = content[key-1].price
         }
         let changedValue = currentPrice - prevPrice
-        let changedPercent = ((currentPrice - prevPrice)/prevPrice*100).toFixed(2)
+        let changedPercent = (Math.abs(100 - (currentPrice / prevPrice) * 100)).toFixed(2)
+
+        if(Math.sign(changedValue) === 1){
+            colorized = '<td class="text-danger">'
+            sign = '+'
+            console.log(changedValue + Math.sign(changedValue))
+        } else if (Math.sign(changedValue) === 0){
+            colorized = '<td class="text-secondary">'
+            sign = ''
+        } else {
+            colorized = '<td class="text-success">'
+            sign = '-'
+        }
 
         list.innerHTML =       '<tr>\n' +
             '                        <td>' + content[key].updatedTime + '</td>\n' +
-            '                        <td>' + currentPrice + ' тг.</td>\n' +
-            '                        <td>' + changedValue + ' тг.</td>\n' +
-            '                        <td>' + changedPercent + '% </td>\n' +
+            '                        <td>'  + currentPrice + ' тг.</td>\n' +
+            colorized + sign + Math.abs(changedValue) + ' тг.</td>\n' +
+            colorized + sign + changedPercent + '% </td>\n' +
             '                    </tr>' + list.innerHTML
     }
 })()
