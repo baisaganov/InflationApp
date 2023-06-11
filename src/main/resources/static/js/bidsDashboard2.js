@@ -62,7 +62,7 @@ async function getRef(){
             prevPrice = refContent[key-1].percent
         }
         let changedValue = currentPrice - prevPrice
-        let changedPercent = ((currentPrice / prevPrice) * 100).toFixed(2)
+        let changedPercent = (Math.abs(100 - (currentPrice / prevPrice) * 100)).toFixed(2)
 
         list.innerHTML =       '<tr>\n' +
             '                        <td>' + refContent[key].year + '</td>\n' +

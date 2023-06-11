@@ -41,7 +41,7 @@ public class ProductsParser {
     }
 
 
-    @Scheduled(initialDelay = 1000*60*60*9, fixedDelay = 1000*60*60*24)
+    @Scheduled(initialDelay = 1000*60*60*12, fixedDelay = 1000*60*60*24)
     public void singleThread() throws InterruptedException {
         long parsingProductsTimeStart = System.currentTimeMillis();
         log.info("Parsing products started");
@@ -112,7 +112,7 @@ public class ProductsParser {
         List<ChangedProduct> changedProductList = new ArrayList<>();
         for (List<Product> products : list) {
             int priceChangeValue = products.get(0).getPrice() - products.get(1).getPrice();
-            double priceChangePercent = (((double)products.get(0).getPrice() / products.get(1).getPrice()) * 100);
+            double priceChangePercent = Math.abs(100 - ((double)products.get(0).getPrice() / products.get(1).getPrice()) * 100);
             ProductDTO productDTO = convertListToProductDTO(products).get(0);
             ChangedProduct changedProduct = new ChangedProduct(
                     Math.toIntExact(productDTO.getArticul()),

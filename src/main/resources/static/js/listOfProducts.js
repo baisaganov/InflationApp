@@ -52,18 +52,18 @@ async function getData(page= 0){
 
     loadingButton.innerHTML = '<button class="btn btn-primary d-inline-flex align-items-right" onclick="getData(' + (page+1) + ')" type="button">\n' +
         '    Далее →' +
-        '<script src="/js/listOfProducts.js"></script>' +
+        // '<script src="/js/listOfProducts.js"></script>' +
         '  </button>'
 
     if (page > 0){
         loadingButton.innerHTML = '<button class="btn btn-primary d-inline-flex align-items-right" onclick="getData(' + (page-1) + ')" type="button">\n' +
             '← Назад' +
-        '<script src="/js/listOfProducts.js"></script>' +
+        // '<script src="/js/listOfProducts.js"></script>' +
         '  </button>' + loadingButton.innerHTML
     } else if (page===0){
         loadingButton.innerHTML = '<button class="btn btn-primary d-inline-flex align-items-right" onclick="getData(' + (page+1) + ')" type="button">\n' +
             '    Далее →' +
-            '<script src="/js/listOfProducts.js"></script>' +
+            // '<script src="/js/listOfProducts.js"></script>' +
             '  </button>'
     }
 }
