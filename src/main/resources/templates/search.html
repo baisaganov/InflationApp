@@ -1,20 +1,23 @@
 <html lang="en" data-bs-theme="dark" xmlns:th = "http://www.thymeleaf.org">
 <head>
-<!--    <script src="https://getbootstrap.com/docs/5.3/assets/js/color-modes.js"></script>-->
+    <!--  <script src="https://getbootstrap.com/docs/5.3/assets/js/color-modes.js"></script>-->
     <script src="/bootstrap/js/color-modes.js"></script>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Отчет по инфляции предоставляет подробную информацию о текущем состоянии и трендах инфляции. Получите надежные данные о росте цен на товары и услуги, аналитические отчеты и прогнозы. Своевременная и точная информация для принятия финансовых решений.">
-    <title>Отчет по Инфляции</title>
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.111.3">
+    <title th:text="${req} + ' – поиск по InflationMonitor'"></title>
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/dashboard/">
 
 
 
 
 
-<!--    <link href="https://getbootstrap.com/docs/5.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">-->
+    <!--  <link href="https://getbootstrap.com/docs/5.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">-->
     <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
     <!-- Favicons -->
     <link rel="apple-touch-icon" href="https://getbootstrap.com/docs/5.3/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
     <link rel="icon" href="https://getbootstrap.com/docs/5.3/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
@@ -101,9 +104,8 @@
 
 
     <!-- Custom styles for this template -->
-<!--    <link href="https://getbootstrap.com/docs/5.3/examples/dashboard/dashboard.css" rel="stylesheet">-->
+    <!--    <link href="https://getbootstrap.com/docs/5.3/examples/dashboard/dashboard.css" rel="stylesheet">-->
     <link href="/bootstrap/css/dashboard.css" rel="stylesheet">
-
 </head>
 <body>
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -125,27 +127,27 @@
 <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
     <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (dark)">
         <svg class="bi my-1 theme-icon-active" width="1em" height="1em"><use href="#moon-stars-fill"></use></svg>
-        <span class="visually-hidden" id="bd-theme-text">Выбор темы</span>
+        <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
     </button>
     <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text" style="">
         <li>
             <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
                 <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#sun-fill"></use></svg>
-                Светлая
+                Light
                 <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
             </button>
         </li>
         <li>
             <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="dark" aria-pressed="true">
                 <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#moon-stars-fill"></use></svg>
-                Темная
+                Dark
                 <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
             </button>
         </li>
         <li>
             <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="auto" aria-pressed="false">
                 <svg class="bi me-2 opacity-50 theme-icon" width="1em" height="1em"><use href="#circle-half"></use></svg>
-                Авто
+                Auto
                 <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
             </button>
         </li>
@@ -158,11 +160,29 @@
     <button class="navbar-toggler d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <input class="form-control form-control-dark w-100 rounded-0 border-0" type="text" placeholder="Search" aria-label="Search">
+    <script>
+        function handleKeyDown(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Предотвращаем обычное действие Enter (например, отправку формы)
+                createLinkAndRedirect();
+            }
+        }
+
+        function createLinkAndRedirect() {
+            var input = document.getElementById("urlInput");
+            var url = '/search?q=' + input.value;
+            var link = document.createElement("a");
+            link.href = url;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+    <div class="input-group">
+        <input id="urlInput" type="search"  class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+        <button type="submit" class="btn btn-outline-primary" onclick="createLinkAndRedirect()">ПОИСК</button>
+    </div>
     <div class="navbar-nav">
-        <!--        <div class="nav-item text-nowrap">-->
-        <!--            <a class="nav-link px-3" href="#">Sign out</a>-->
-        <!--        </div>-->
     </div>
 </header>
 
@@ -172,7 +192,7 @@
             <div class="position-sticky pt-3 sidebar-sticky">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link active" href="/inflation-report">
+                        <a class="nav-link" href="/inflation-report">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bar-chart-2 align-text-bottom" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
                             Отчет по Инфляции
                         </a>
@@ -196,13 +216,13 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/" disabled>
+                        <a class="nav-link" href="/">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file align-text-bottom" aria-hidden="true"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>
                             Калькулятор
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" disabled>
+                        <a class="nav-link" href="#">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers align-text-bottom" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
                             Integrations
                         </a>
@@ -245,93 +265,42 @@
         </nav>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div class="accordion" id="accordionPanelsStayOpenExample">
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                            График продуктовой инфляции
-                        </button>
-                    </h2>
-                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
-                        <div class="accordion-body">
-<!--                            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">-->
-<!--                                <h1 class="h2">Dashboard</h1>-->
-<!--                                <div class="btn-toolbar mb-2 mb-md-0">-->
-<!--                                    <div class="btn-group me-2">-->
-<!--                                        <button type="button" class="btn btn-sm btn-outline-secondary">Поделиться</button>-->
-<!--                                        <button type="button" class="btn btn-sm btn-outline-secondary">Экспортировать</button>-->
-<!--                                    </div>-->
-<!--                                    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">-->
-<!--                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar align-text-bottom" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>-->
-<!--                                        This week-->
-<!--                                    </button>-->
-<!--                                </div>-->
-<!--                            </div>-->
-
-                            <canvas class="my-4 w-100" id="productsInflation" width="1180" height="498" style="display: block; box-sizing: border-box; height: 249px; width: 590px;"></canvas>
-
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-sm">
-                                        <h4 class="mb-1">Топ роста</h4>
-                                        <div class="list-group" id="growthTop">
-
-                                        </div>
-                                    </div>
-                                    <div class="col-sm">
-                                        <h4 class="mb-1">Топ падения</h4>
-                                        <div class="list-group" id="fallTop">
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <br />
-                            </div>
-
-                            <h3>История изменения индекса</h3>
-                            <div class="table-responsive">
-                                <table class="table table-striped table-sm">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col">Дата</th>
-                                        <th scope="col">Значение</th>
-                                        <th scope="col">Изменение</th>
-                                        <th scope="col">Изменение (%)</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody class="productsInflation">
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
-                            График инфляции недвижимости
-                        </button>
-                    </h2>
-                    <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
-                        <div class="accordion-body">
-                            <strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                        </div>
-                    </div>
-                </div>
-                <div class="accordion-item">
-                    <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                            Валютная инфляция
-                        </button>
-                    </h2>
-                    <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
-                        <div class="accordion-body">
-                            <strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-                        </div>
-                    </div>
-                </div>
+            <div>
+                <h2 th:text="'Результат поиска по запросу: ' + ${req}"></h2>
             </div>
+            <div class="table-responsive" th:if="${searchResult != null}">
+                <table class="table table-striped table-sm" >
+                    <thead>
+                    <tr>
+                        <th scope="col">Артикул</th>
+                        <th scope="col">Наименование</th>
+                        <th scope="col">Категория</th>
+                        <th scope="col">Последнее обновление</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="product: ${searchResult}">
+                        <td th:text="${product.getArticul()}"></td>
+                        <td th:text="${product.getName()}"></td>
+                        <td th:text="${product.getCategory().getName()}"></td>
+                        <td th:text="${product.getUpdatedTime}"></td>
+                        <td>
+                            <a th:href="'/products/' + ${product.getArticul()}" class="btn btn-sm btn-ouclassName-secondary">Подробнее</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <button th:if="${page > 0}" class="btn btn-primary d-inline-flex align-items-right" type="SUBMIT">
+                    <a th:href="@{/search(q=${req}, page=${page - 1})}">← Назад</a>
+                </button>
+
+                <button th:if="${searchResult.size() > 11 && (maxPage - 1) != page}" class="btn btn-primary d-inline-flex align-items-right" type="SUBMIT">
+                    <a th:href="@{/search(q=${req}, page=${page + 1})}">Далее →</a>
+                </button>
+
+            </div>
+            <h4 th:unless="${searchResult != null}">Не найдено</h4>
         </main>
     </div>
 </div>
@@ -344,8 +313,7 @@
 <script src="/bootstrap/js/feather.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js" integrity="sha384-gdQErvCNWvHQZj6XZM0dNsAoY4v+j5P1XDpNkcM3HJG1Yx04ecqIHk7+4VBOCHOG" crossorigin="anonymous"></script>
 <script src="/bootstrap/js/chart.umd.min.js"></script>
-<script src="/js/inflationDashboards.js"></script>
-<script src="/js/growthAndFallTop.js"></script>
+
 
 
 </body></html>

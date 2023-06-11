@@ -1,12 +1,10 @@
 package kz.inflation.InflationApp.services;
 
-import kz.inflation.InflationApp.dto.ProductDTO;
 import kz.inflation.InflationApp.models.Product;
 import kz.inflation.InflationApp.models.ProductCategory;
 import kz.inflation.InflationApp.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -130,4 +128,19 @@ public class ProductService {
     }
 
 
+    public List<Product> findByName(String q, PageRequest pageRequest) {
+        q = '%' + q + '%';
+        List<Long> articuls = repository.searchProductsByName(q, pageRequest);
+        System.out.println(articuls.toString());
+        List<Product> products = new ArrayList<>();
+        for (Long articul : articuls) {
+            products.add(repository.getDistinctFirstByArticulOrderByUpdatedTimeDesc(articul));
+        }
+        return products;
+    }
+
+    public int searchCount(String q){
+        q = '%' + q + '%';
+        return repository.searchProductsCount(q);
+    }
 }

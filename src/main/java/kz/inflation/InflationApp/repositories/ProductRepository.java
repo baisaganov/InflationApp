@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -38,6 +37,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
     Long countAllByUpdatedTime(LocalDate date);
+
+
     @Query(value = "select sum(price) from products where updatedTime=?1")
     Long sumAllByUpdatedTime(LocalDate date);
 
@@ -51,5 +52,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Product findDistinctByArticulOrderByUpdatedTimeDesc(Long articul);
 
 
-//    List<Product> findDistinctFirstByArticul(Set<Long> articul);
+    @Query(value = "select distinct (articul) from products where upper(name) like upper(?1) escape '\\'")
+    List<Long> searchProductsByName(String q, PageRequest pageRequest);
+    //            "offset ?1 rows fetch first ?1 rows only ", nativeQuery = true)
+
+
+    @Query(value = "select count(distinct (articul)) from products where upper(name) like upper(?1) escape '\\'", nativeQuery = true)
+    int searchProductsCount(String q);
 }
