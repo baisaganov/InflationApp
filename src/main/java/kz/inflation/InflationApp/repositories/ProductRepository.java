@@ -49,7 +49,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     /*
     * Принимает на вход артикул, возвращает последний обновленный Продукт
     * */
-    Product findDistinctByArticulOrderByUpdatedTimeDesc(Long articul);
+    Product findTop1ByArticulOrderByUpdatedTimeDesc(Long articul);
+
 
 
     @Query(value = "select distinct (articul) from products where upper(name) like upper(?1) escape '\\'")
