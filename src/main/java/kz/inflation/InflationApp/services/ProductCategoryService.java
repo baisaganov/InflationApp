@@ -22,6 +22,7 @@ public class ProductCategoryService{
 
 
     public ProductCategory getCategory(String category) {
+        category = "%" + category + "%";
         return productCategoryRepository.findFirstByNameLike(category);
     }
 
