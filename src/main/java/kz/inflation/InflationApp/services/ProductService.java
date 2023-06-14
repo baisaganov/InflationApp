@@ -9,10 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,7 +27,9 @@ public class ProductService {
     }
 
     public List<Product> getAllProducts(){
-        return repository.findAll();
+        List<Product> list = repository.findAll();
+        System.out.println(list.toString());
+        return list;
     }
 
     public List<Long> getAllUniqueArticuls(){
@@ -81,46 +81,35 @@ public class ProductService {
         repository.save(product1);
     }
 
+    /*
+        Функция обновляет не спарсенные продукты под текущую дату
+    * */
     @Transactional
-    public void saveNotUpdatedItems(){
-        // - [a] Выбрать все продукты (select distinct articul from products;)
-        Set<Product> allProducts = new HashSet<>(repository.findAll());
-        // - [b] Выбрать только те данные которые обновлены за сегодня(select distinct articul from products where updated_time='2023-05-15';)
-        Set<Product> todayProducts = new HashSet<>(repository.findAllByUpdatedTime(LocalDate.now()));
-        // - [ ] Исключить сегодняшние данные из выборки по артикулу и оставить только не обновленные  (b-a)
-        allProducts.removeAll(todayProducts);
-        // - [ ] Выбрать только уникальные артикулы не обновленные за сегодня
-        List<Product> products = new ArrayList<>();
-        for (Product e : allProducts) {
-            Product product = new Product(e.getArticul(), e.getName(), e.getPrice(), LocalDate.now());
-            ProductCategory category = e.getCategory();
-            product.setCategory(category);
-            products.add(product);
-        }
-        repository.saveAll(products);
-    }
-
-    @Transactional
-    public void saveNotUpdatedItems2(){
-        // - [a] Выбрать все уникальные артикулы (select distinct articul from products;)
-        List<Long> allArticuls = repository.selectAllDistinctArticul();
-        // - [b] Выбрать только те артикулы которые обновлены за сегодня(select distinct articul from products where updated_time='2023-05-15';)
-        List<Long> todayArticuls = repository.selectAllDistinctArticulByDate(LocalDate.now());
-        // - [ ] Исключить сегодняшние данные из выборки по артикулу и оставить только не обновленные  (b-a)
-        allArticuls.removeAll(todayArticuls);
-        // - [ ] Получить продукты по оставшимся артикулам с сортировкой DESC и сохранить текущим числом
-        List<Product> updatedProductList = new ArrayList<>();
-        for (Long articul : allArticuls) {
-            Product product = repository.findDistinctByArticulOrderByUpdatedTimeDesc(articul);
+    public List<Product> saveNotUpdatedItems(){
+        long start = System.currentTimeMillis();
+        //Взять все продукты
+        List<Product> list = repository.findAll();
+        //Отсортировать по дате
+        list.sort(Comparator.comparing(Product::getUpdatedTime).reversed());
+        //Поместить в сет
+        List<Product> unique = new HashSet<>(list).stream().toList();
+        //Убрать и сета все обновленные продукты
+        List<Product> notUpdated = unique.stream().filter(e -> !(e.getUpdatedTime().equals(LocalDate.now()))).collect(Collectors.toList());
+        //Оставшиеся продукты конвертировать в за сегодняшний день
+        List<Product> toSave = new ArrayList<>();
+        for (Product product : notUpdated) {
             Product newProduct = new Product(
                     product.getArticul(),
                     product.getName(),
                     product.getPrice(),
                     LocalDate.now()
             );
-            updatedProductList.add(newProduct);
+            newProduct.setCategory(product.getCategory());
+            toSave.add(newProduct);
         }
-        repository.saveAll(updatedProductList);
+        repository.saveAll(toSave);
+        System.out.println("saveNotUpdatedItems3 done in (mils): " + (System.currentTimeMillis()-start));
+        return toSave;
     }
 
     public Product getProductByArticul(Long articul){
