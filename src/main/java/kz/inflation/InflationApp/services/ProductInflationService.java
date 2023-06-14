@@ -32,12 +32,10 @@ public class ProductInflationService {
         LocalDate currentDate = LocalDate.now();
         Long count = productRepository.countAllByUpdatedTime(currentDate);
         Long sum = productRepository.sumAllByUpdatedTime(currentDate);
-        System.out.println(count+ " " + sum);
         ProductInflation productInflation = new ProductInflation(count,
                 sum,
                 sum/count,
                 currentDate);
-        System.out.println(productInflation.toString());
         productInflationRepository.save(productInflation);
     }
 
