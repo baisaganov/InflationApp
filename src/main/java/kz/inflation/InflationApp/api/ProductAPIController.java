@@ -13,6 +13,7 @@ import kz.inflation.InflationApp.services.ProductInflationService;
 import kz.inflation.InflationApp.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -48,6 +49,13 @@ public class ProductAPIController {
         return convertListToProductDTO(productService.getAllProducts());
     }
 
+    @GetMapping("/products/not-updated3")
+    public List<ProductDTO> updated3(){
+        return convertListToProductDTO(productService.saveNotUpdatedItems());
+    }
+
+
+
     @GetMapping("/products/{articul}")
     public List<ProductDTO> getProductByArticul(@PathVariable Long articul) {
         return convertListToProductDTO(productService.getAllProductsByArticul(articul));
@@ -74,6 +82,11 @@ public class ProductAPIController {
     @GetMapping("/products/categories")
     public List<ProductCategoryDTO> categoryDTOList(){
         return convertToCategoryDTO(categoryService.findAll());
+    }
+
+    @PostMapping("products/update-not-updated")
+    public ResponseEntity<String> update(){
+        return ResponseEntity.ok().build();
     }
 
     private List<ProductDTO> convertListToProductDTO(List<Product> products) {
