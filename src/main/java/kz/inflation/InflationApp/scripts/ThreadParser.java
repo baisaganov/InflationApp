@@ -61,7 +61,7 @@ public class ThreadParser extends Thread {
     public void seleniumGetLinks() {
         FirefoxOptions options = new FirefoxOptions();
         options.addArguments("-headless");
-        options.setLogLevel(FirefoxDriverLogLevel.ERROR);
+        options.setLogLevel(FirefoxDriverLogLevel.DEBUG);
 
         WebDriver driver = new FirefoxDriver(options);
 
@@ -166,7 +166,7 @@ public class ThreadParser extends Thread {
                     .replaceAll("[^0-9]", "");
 
             Product product1 = new Product(articul, name, Integer.parseInt(price));
-            if (category==null) category = productService.getProductByArticul(product1.getArticul()).getCategory();
+            if (category == null || category.getId() == null) category = productService.getProductByArticul(product1.getArticul()).getCategory();
             product1.setCategory(category);
             productList.add(product1);
         }
