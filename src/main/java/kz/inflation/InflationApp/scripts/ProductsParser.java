@@ -41,7 +41,9 @@ public class ProductsParser {
     }
 
 
-    @Scheduled(initialDelay = 1000*60*60*12, fixedDelay = 1000*60*60*24)
+//    @Scheduled(cron = "@daily", zone = "GMT+6")
+//    @Scheduled(fixedDelay = 1000*60*60)
+    @Scheduled(cron = "0 50 8 * * *", zone = "GMT+6")
     public void singleThread() throws InterruptedException {
         long parsingProductsTimeStart = System.currentTimeMillis();
         log.info("Parsing products started");
@@ -65,9 +67,10 @@ public class ProductsParser {
         list.add("http://kaspi.kz/shop/nur-sultan/c/ready%20meal/?q=%3Acategory%3AReady%20meal%3AallMerchants%3AMagnum&sort=relevance&sc=");
         list.add("http://kaspi.kz/shop/nur-sultan/c/seafood/?q=%3Acategory%3ASeafood%3AallMerchants%3AMagnum&sort=relevance&sc=");
         list.add("http://kaspi.kz/shop/nur-sultan/c/seafood/?q=%3Acategory%3ASeafood%3AallMerchants%3AMagnum&sort=relevance&sc=");
-        Thread thread1 = new Thread(new ThreadParser(productService, productCategoryService, list.subList(0, 6)));
-        Thread thread2 = new Thread(new ThreadParser(productService, productCategoryService, list.subList(6, 13)));
-        Thread thread3 = new Thread(new ThreadParser(productService, productCategoryService, list.subList(13, 17)));
+        Thread thread1 = new Thread(new ThreadParser(productService, productCategoryService, list.subList(0, 4)));
+        Thread thread2 = new Thread(new ThreadParser(productService, productCategoryService, list.subList(4, 8)));
+        Thread thread3 = new Thread(new ThreadParser(productService, productCategoryService, list.subList(8, 12)));
+        Thread thread4 = new Thread(new ThreadParser(productService, productCategoryService, list.subList(12, 17)));
 
         try {
             thread1.start();
@@ -80,21 +83,28 @@ public class ProductsParser {
         } catch (Exception e){
             log.error("Thread2 error" + e.getLocalizedMessage());
         }
-
         try {
             thread3.start();
         } catch (Exception e){
             log.error("Thread3 error" + e.getLocalizedMessage());
         }
+
+        try {
+            thread4.start();
+        } catch (Exception e){
+            log.error("Thread4 error" + e.getLocalizedMessage());
+        }
+
         thread1.join();
         thread2.join();
         thread3.join();
+        thread4.join();
 
-        log.info("Parsing done in:" + (((System.currentTimeMillis() - parsingProductsTimeStart)/60)/60) + " minutes");
+        log.info("Parsing done in:" + (((System.currentTimeMillis() - parsingProductsTimeStart)/60)/60/10) + " minutes");
 
         log.info("Updating not parsed products");
         long start = System.currentTimeMillis();
-        productService.saveNotUpdatedItems2();
+        productService.saveNotUpdatedItems();
         log.info("Update done in " + (System.currentTimeMillis()-start));
 
         start = System.currentTimeMillis();
