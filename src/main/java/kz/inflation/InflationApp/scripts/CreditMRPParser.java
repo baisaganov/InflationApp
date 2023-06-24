@@ -49,7 +49,6 @@ public class CreditMRPParser {
                 yearPriceMap.put(Integer.valueOf(e.text().split(" ")[4]), value
                         );
             }
-            System.out.println(yearPriceMap);
             switch (bids){
                 case MZP -> mzpService.updateData(yearPriceMap);
                 case MRP -> mrpService.updateData(yearPriceMap);
