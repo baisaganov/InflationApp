@@ -84,9 +84,15 @@ public class ProductAPIController {
         return convertToCategoryDTO(categoryService.findAll());
     }
 
-    @PostMapping("products/update-not-updated")
+    @GetMapping("/products/update-not-updated")
     public ResponseEntity<String> update(){
+        productService.saveNotUpdatedItems();
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/products/today-count")
+    public int todayProductCount(){
+        return productInflationService.todayProductsCount();
     }
 
     private List<ProductDTO> convertListToProductDTO(List<Product> products) {

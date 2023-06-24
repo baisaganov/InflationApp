@@ -86,16 +86,19 @@ public class ProductService {
     * */
     @Transactional
     public List<Product> saveNotUpdatedItems(){
-        long start = System.currentTimeMillis();
         //Взять все продукты
         List<Product> list = repository.findAll();
         //Отсортировать по дате
         list.sort(Comparator.comparing(Product::getUpdatedTime).reversed());
+
         //Поместить в сет
         List<Product> unique = new HashSet<>(list).stream().toList();
+        System.out.println("Total unique: " + unique.size());
+        this.findClones(unique);
         //Убрать и сета все обновленные продукты
-        List<Product> notUpdated = unique.stream().filter(e -> !(e.getUpdatedTime().equals(LocalDate.now()))).collect(Collectors.toList());
-        //Оставшиеся продукты конвертировать в за сегодняшний день
+        List<Product> notUpdated = unique.stream().filter(e -> !(e.getUpdatedTime().equals(LocalDate.now()))).toList();
+
+        //Оставшиеся продукты конвертировать в сегодняшний день
         List<Product> toSave = new ArrayList<>();
         for (Product product : notUpdated) {
             Product newProduct = new Product(
@@ -108,7 +111,6 @@ public class ProductService {
             toSave.add(newProduct);
         }
         repository.saveAll(toSave);
-        System.out.println("saveNotUpdatedItems3 done in (mils): " + (System.currentTimeMillis()-start));
         return toSave;
     }
 
@@ -131,5 +133,12 @@ public class ProductService {
     public int searchCount(String q){
         q = '%' + q + '%';
         return repository.searchProductsCount(q);
+    }
+
+    private void findClones(List<Product> productList){
+        List<Long> articuls = productList.stream().map(Product::getArticul).toList();
+        HashSet<Long> longHashSet = new HashSet<>(articuls);
+        System.out.println("Articuls size: " + articuls.size());
+        System.out.println("longHashSet size: " + longHashSet.size());
     }
 }

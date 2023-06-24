@@ -38,6 +38,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     Long countAllByUpdatedTime(LocalDate date);
 
+    List<Product> getProductsByUpdatedTime(LocalDate date);
+
 
     @Query(value = "select sum(price) from products where updatedTime=?1")
     Long sumAllByUpdatedTime(LocalDate date);

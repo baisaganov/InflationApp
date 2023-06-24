@@ -30,13 +30,27 @@ public class ProductInflationService {
     @Transactional
     public void updateData(){
         LocalDate currentDate = LocalDate.now();
-        Long count = productRepository.countAllByUpdatedTime(currentDate);
-        Long sum = productRepository.sumAllByUpdatedTime(currentDate);
-        ProductInflation productInflation = new ProductInflation(count,
+        List<Product> products = productRepository.getProductsByUpdatedTime(currentDate);
+        System.out.println("today products in update inflation inform"+products.size());
+        ProductInflation productInflation = this.updateInflationInformation(products, currentDate);
+        productInflationRepository.save(productInflation);
+    }
+
+    public int todayProductsCount(){
+        return productRepository.getProductsByUpdatedTime(LocalDate.now()).size();
+    }
+
+
+    private ProductInflation updateInflationInformation(List<Product> products, LocalDate date){
+        Long count = (long) products.size();
+        Long sum = 0L;
+        for (Product product : products) {
+            sum += (long) product.getPrice();
+        }
+        return new ProductInflation(count,
                 sum,
                 sum/count,
-                currentDate);
-        productInflationRepository.save(productInflation);
+                date);
     }
 
 
