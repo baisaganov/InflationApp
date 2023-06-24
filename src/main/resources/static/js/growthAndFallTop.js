@@ -14,7 +14,7 @@
     const growth = document.getElementById('growthTop')
     const fall = document.getElementById('fallTop')
 
-    let topGrowth = content.sort((a, b) => {
+    let topGrowth = content.filter(e => e.changeValue >= 0).sort((a, b) => {
         if(a.changePercent > b.changePercent){
             return -1;
         }
@@ -32,8 +32,8 @@
     }
 
 
-    let topFall = content.sort((a, b) => {
-        if(a.changePercent < b.changePercent){
+    let topFall = content.filter(e => e.changeValue < 0).sort((a, b) => {
+        if(a.changePercent > b.changePercent){
             return -1;
         }
     })
