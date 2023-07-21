@@ -1,17 +1,16 @@
 package kz.inflation.InflationApp.api;
 
-import kz.inflation.InflationApp.models.MRP;
-import kz.inflation.InflationApp.models.MZP;
-import kz.inflation.InflationApp.models.RefinancingBids;
-import kz.inflation.InflationApp.services.MRPService;
-import kz.inflation.InflationApp.services.MZPService;
-import kz.inflation.InflationApp.services.RefinancingBidsService;
+import kz.inflation.InflationApp.models.refinancingBids.MRP;
+import kz.inflation.InflationApp.models.refinancingBids.MZP;
+import kz.inflation.InflationApp.models.refinancingBids.RefinancingBids;
+import kz.inflation.InflationApp.services.refinancingBidsServices.MRPService;
+import kz.inflation.InflationApp.services.refinancingBidsServices.MZPService;
+import kz.inflation.InflationApp.services.refinancingBidsServices.RefinancingBidsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

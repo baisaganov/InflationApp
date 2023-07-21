@@ -1,7 +1,8 @@
 package kz.inflation.InflationApp.controllers;
 
-import kz.inflation.InflationApp.dto.products.ProductCategoryDTO;
+import kz.inflation.InflationApp.models.pharmacy.PharmacyCategory;
 import kz.inflation.InflationApp.models.products.ProductCategory;
+import kz.inflation.InflationApp.services.pharmacyServices.PharmacyCategoryService;
 import kz.inflation.InflationApp.services.productServices.ProductCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("/products")
-public class ProductsController {
-    private final ProductCategoryService categoryService;
-    private List<ProductCategory> categories;
+@RequestMapping("/pharmacy")
+public class PharmacyController {
+    private final PharmacyCategoryService categoryService;
+    private List<PharmacyCategory> categories;
 
     @Autowired
-    public ProductsController(ProductCategoryService categoryService) {
+    public PharmacyController(PharmacyCategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
@@ -28,6 +29,7 @@ public class ProductsController {
         if (categories == null) categories = categoryService.findAll();
         model.addAttribute("categories", categories);
         model.addAttribute("className", categories.get(0).getClass().getName());
+
         return "products/products";
     }
 
