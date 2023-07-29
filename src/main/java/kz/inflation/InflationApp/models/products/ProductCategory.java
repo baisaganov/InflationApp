@@ -5,6 +5,7 @@ import kz.inflation.InflationApp.models.abstractClasses.ItemCategoryAbstract;
 import kz.inflation.InflationApp.models.products.Product;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "product_category")
 public class ProductCategory extends ItemCategoryAbstract {
@@ -62,5 +63,18 @@ public class ProductCategory extends ItemCategoryAbstract {
 
     public void setProducts(List<Product> products) {
         this.products = products;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductCategory that = (ProductCategory) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

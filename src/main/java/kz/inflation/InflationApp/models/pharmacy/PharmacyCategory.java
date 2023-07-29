@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import kz.inflation.InflationApp.models.abstractClasses.ItemCategoryAbstract;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "pharmacy_category")
 public class PharmacyCategory extends ItemCategoryAbstract {
@@ -54,6 +55,19 @@ public class PharmacyCategory extends ItemCategoryAbstract {
 
     public void setPharmacies(List<Pharmacy> pharmacies) {
         this.pharmacies = pharmacies;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PharmacyCategory that = (PharmacyCategory) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override
