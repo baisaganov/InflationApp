@@ -1,17 +1,27 @@
 package kz.inflation.InflationApp.scripts;
 
+import kz.inflation.InflationApp.dto.householdGoods.HouseholdGoodsCategoryDTO;
+import kz.inflation.InflationApp.dto.householdGoods.HouseholdGoodsDTO;
 import kz.inflation.InflationApp.dto.pharmacies.PharmacyCategoryDTO;
 import kz.inflation.InflationApp.dto.pharmacies.PharmacyDTO;
 import kz.inflation.InflationApp.dto.products.ProductCategoryDTO;
 import kz.inflation.InflationApp.dto.products.ProductDTO;
+import kz.inflation.InflationApp.models.householdGoods.ChangedHouseholdGoods;
+import kz.inflation.InflationApp.models.householdGoods.HouseholdGoods;
+import kz.inflation.InflationApp.models.householdGoods.HouseholdGoodsCategory;
 import kz.inflation.InflationApp.models.pharmacy.ChangedPharmacyAbstract;
 import kz.inflation.InflationApp.models.pharmacy.Pharmacy;
 import kz.inflation.InflationApp.models.pharmacy.PharmacyCategory;
 import kz.inflation.InflationApp.models.products.ChangedProduct;
 import kz.inflation.InflationApp.models.products.Product;
 import kz.inflation.InflationApp.models.products.ProductCategory;
+import kz.inflation.InflationApp.scripts.householdGoods.HouseholdGoodsParser;
 import kz.inflation.InflationApp.scripts.pharmaciesParse.PharmacyParser;
 import kz.inflation.InflationApp.scripts.productsParse.ProductParser;
+import kz.inflation.InflationApp.services.householdGoodsServices.ChangedHouseholdGoodsService;
+import kz.inflation.InflationApp.services.householdGoodsServices.HouseholdGoodsCategoryService;
+import kz.inflation.InflationApp.services.householdGoodsServices.HouseholdGoodsInflationService;
+import kz.inflation.InflationApp.services.householdGoodsServices.HouseholdGoodsService;
 import kz.inflation.InflationApp.services.pharmacyServices.ChangedPharmacyService;
 import kz.inflation.InflationApp.services.pharmacyServices.PharmacyCategoryService;
 import kz.inflation.InflationApp.services.pharmacyServices.PharmacyInflationService;
@@ -46,9 +56,28 @@ public class ParsingStarter {
     private final PharmacyCategoryService pharmacyCategoryService;
     private final ChangedPharmacyService changedPharmacyService;
 
+    private final HouseholdGoodsService householdGoodsService;
+    private final HouseholdGoodsInflationService householdGoodsInflationService;
+    private final HouseholdGoodsCategoryService householdGoodsCategoryService;
+    private final ChangedHouseholdGoodsService changedHouseholdGoodsService;
+
 
     @Autowired
-    public ParsingStarter(ProductService productService, ProductInflationService productInflationService, ProductCategoryService productCategoryService, ChangedProductService changedProductService, PharmacyService pharmacyService, PharmacyInflationService pharmacyInflationService, PharmacyCategoryService pharmacyCategoryService, ChangedPharmacyService changedPharmacyService) {
+    public ParsingStarter(ProductService productService,
+                          ProductInflationService productInflationService,
+                          ProductCategoryService productCategoryService,
+                          ChangedProductService changedProductService,
+
+                          PharmacyService pharmacyService,
+                          PharmacyInflationService pharmacyInflationService,
+                          PharmacyCategoryService pharmacyCategoryService,
+                          ChangedPharmacyService changedPharmacyService,
+
+                          HouseholdGoodsService householdGoodsService,
+                          HouseholdGoodsInflationService householdGoodsInflationService,
+                          HouseholdGoodsCategoryService householdGoodsCategoryService,
+                          ChangedHouseholdGoodsService changedHouseholdGoodsService) {
+
         this.productService = productService;
         this.productInflationService = productInflationService;
         this.productCategoryService = productCategoryService;
@@ -58,6 +87,11 @@ public class ParsingStarter {
         this.pharmacyInflationService = pharmacyInflationService;
         this.pharmacyCategoryService = pharmacyCategoryService;
         this.changedPharmacyService = changedPharmacyService;
+
+        this.householdGoodsService = householdGoodsService;;
+        this.householdGoodsInflationService = householdGoodsInflationService;;
+        this.householdGoodsCategoryService = householdGoodsCategoryService;;
+        this.changedHouseholdGoodsService = changedHouseholdGoodsService;;
     }
 
 /*
@@ -215,41 +249,43 @@ public class ParsingStarter {
     * TODO:
     *       Сделать скрипт под хоз товары
     * */
-    private boolean householdGoodsParserStarter() throws InterruptedException {
+    private void householdGoodsParserStarter() throws InterruptedException {
+        if(!this.householdGoodsParser()) log.info("Household Goods parser had Errors");
+
+        log.info("Updating not parsed Household Goods");
+        long start = System.currentTimeMillis();
+
+        householdGoodsService.saveNotUpdatedItems();
+
+        log.info("Household Goods Update done in " + (System.currentTimeMillis()-start));
+        start = System.currentTimeMillis();
+        log.info("Updating inflation information Household Goods");
+
+        householdGoodsInflationService.updateData();
+
+        log.info("Household Goods Update done in " + (System.currentTimeMillis()-start));
+
+        this.lastChangeHouseholdGoodsUpdate();
+    }
+
+    private boolean householdGoodsParser() throws InterruptedException {
         long parsingProductsTimeStart = System.currentTimeMillis();
-        log.info("Parsing products started");
+        log.info("Parsing householdGoods started");
         log.info(System.getProperty("user.dir"));
         List<String> list = new ArrayList<>();
-        Thread thread1 = new Thread(new ProductParser(productService, productCategoryService, list.subList(0, 6)));
-        Thread thread2 = new Thread(new ProductParser(productService, productCategoryService, list.subList(6, 13)));
-        Thread thread3 = new Thread(new ProductParser(productService, productCategoryService, list.subList(13, 17)));
+        list.add("https://kaspi.kz/shop/nur-sultan/c/household%20goods/?q=%3AavailableInZones%3AMagnum_ZONE5%3Acategory%3AHousehold%20goods%3AallMerchants%3AMagnum&sort=relevance&sc=");
+        Thread thread1 = new Thread(new HouseholdGoodsParser(householdGoodsService, householdGoodsCategoryService, list));
 
         try {
             thread1.start();
         } catch (Exception e){
-            log.error("Thread1 error" + e.getLocalizedMessage());
-            return false;
-        }
-
-        try {
-            thread2.start();
-        } catch (Exception e){
-            log.error("Thread2 error" + e.getLocalizedMessage());
-            return false;
-
-        }
-        try {
-            thread3.start();
-        } catch (Exception e){
-            log.error("Thread3 error" + e.getLocalizedMessage());
+            log.error("Thread1 householdGoods error" + e.getLocalizedMessage());
             return false;
         }
 
         thread1.join();
-        thread2.join();
-        thread3.join();
 
-        log.info("Parsing done in:" + (((System.currentTimeMillis() - parsingProductsTimeStart)/60)/60/10) + " minutes");
+        log.info("Parsing householdGoods done in:" + (((System.currentTimeMillis() - parsingProductsTimeStart)/60)/60/10) + " minutes");
         return true;
     }
 
@@ -307,6 +343,33 @@ public class ParsingStarter {
 
     }
 
+    private void lastChangeHouseholdGoodsUpdate(){
+        log.info("Updating changed lastChangeHouseholdGoodsUpdate list");
+        long start = System.currentTimeMillis();
+        List<List<HouseholdGoods>> list = householdGoodsService.lastPriceChangeItems();
+        List<ChangedHouseholdGoods> changedProductList = new ArrayList<>();
+        for (List<HouseholdGoods> products : list) {
+            int priceChangeValue = products.get(0).getPrice() - products.get(1).getPrice();
+            double priceChangePercent = Math.abs(100 - ((double)products.get(0).getPrice() / products.get(1).getPrice()) * 100);
+            HouseholdGoodsDTO pharmacyDTO = convertListToHouseholdGoodsDTO(products).get(0);
+            ChangedHouseholdGoods changedProduct = new ChangedHouseholdGoods(
+                    Math.toIntExact(pharmacyDTO.getArticul()),
+                    pharmacyDTO.getName(),
+                    pharmacyDTO.getPrice(),
+                    pharmacyDTO.getUpdatedTime(),
+                    Math.toIntExact(pharmacyDTO.getCategory().getId()),
+                    pharmacyDTO.getCategory().getName(),
+                    priceChangeValue,
+                    priceChangePercent
+            );
+            changedProductList.add(changedProduct);
+        }
+        changedHouseholdGoodsService.resetTable();
+        changedHouseholdGoodsService.saveAllChangedHouseholdGoods(changedProductList);
+        log.info("Update done in " + (System.currentTimeMillis()-start));
+
+    }
+
     private List<PharmacyDTO> convertListToPharmacyDTO(List<Pharmacy> products) {
         List<PharmacyDTO> dtoList = new ArrayList<>();
         for (Pharmacy e : products) {
@@ -340,4 +403,22 @@ public class ParsingStarter {
     private PharmacyCategoryDTO convertToPharmacyCategoryDTO(PharmacyCategory category) {
         return new PharmacyCategoryDTO(category.getId(), category.getName());
     }
+
+    private List<HouseholdGoodsDTO> convertListToHouseholdGoodsDTO(List<HouseholdGoods> products) {
+        List<HouseholdGoodsDTO> dtoList = new ArrayList<>();
+        for (HouseholdGoods e : products) {
+            dtoList.add(new HouseholdGoodsDTO(
+                    e.getArticul(),
+                    e.getName(),
+                    e.getPrice(),
+                    e.getUpdatedTime(),
+                    convertToCategoryDTO(e.getCategory())));
+        }
+        return dtoList;
+    }
+
+    private HouseholdGoodsCategoryDTO convertToCategoryDTO(HouseholdGoodsCategory category) {
+        return new HouseholdGoodsCategoryDTO(category.getId(), category.getName());
+    }
+
 }
