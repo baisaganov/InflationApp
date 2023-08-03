@@ -97,8 +97,8 @@ public class ParsingStarter {
 /*
 * Шедулер с еженедельным запуском по четвергам
 * */
-//    @Scheduled(cron = "0 16 17 * * *", zone = "GMT+6")
-    @Scheduled(cron = "0 0 8 * * THU", zone = "GMT+6")
+    @Scheduled(cron = "0 46 21 * * *", zone = "GMT+6")
+//    @Scheduled(cron = "0 0 8 * * THU", zone = "GMT+6")
     public void singleThread() throws InterruptedException {
         // Запуск парсера продуктов
         this.productParserStarter();
@@ -107,7 +107,7 @@ public class ParsingStarter {
         this.pharmacyParserStarter();
 
         // Запуск парсера хоз. товаров
-//        this.householdGoodsParserStarter();
+        this.householdGoodsParserStarter();
     }
 
     private void productParserStarter() throws InterruptedException {
@@ -245,10 +245,7 @@ public class ParsingStarter {
         return true;
     }
 
-    /*
-    * TODO:
-    *       Сделать скрипт под хоз товары
-    * */
+
     private void householdGoodsParserStarter() throws InterruptedException {
         if(!this.householdGoodsParser()) log.info("Household Goods parser had Errors");
 
