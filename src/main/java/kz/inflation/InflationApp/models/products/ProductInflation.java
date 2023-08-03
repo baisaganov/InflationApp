@@ -2,19 +2,18 @@ package kz.inflation.InflationApp.models.products;
 
 import jakarta.persistence.*;
 import kz.inflation.InflationApp.models.abstractClasses.ItemInflationAbstract;
-import org.checkerframework.checker.units.qual.C;
 
 import java.time.LocalDate;
 
 @Entity(name = "product_inflation")
-public class ProductInflation extends ItemInflationAbstract {
+public class ProductInflation extends ItemInflationAbstract implements Comparable<ProductInflation> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
     @Column(name = "product_count")
-    private Long productCount;
+    private Long itemCount;
 
     @Column(name = "total_price")
     private Long totalPrice;
@@ -28,15 +27,15 @@ public class ProductInflation extends ItemInflationAbstract {
     public ProductInflation() {
     }
 
-    public ProductInflation(Long productCount, Long totalPrice, double averagePrice, LocalDate updatedTime) {
-        this.productCount = productCount;
+    public ProductInflation(Long itemCount, Long totalPrice, double averagePrice, LocalDate updatedTime) {
+        this.itemCount = itemCount;
         this.totalPrice = totalPrice;
         this.averagePrice = averagePrice;
         this.updatedTime = updatedTime;
     }
 
-    public ProductInflation(Long productCount, Long totalPrice, double averagePrice) {
-        this.productCount = productCount;
+    public ProductInflation(Long itemCount, Long totalPrice, double averagePrice) {
+        this.itemCount = itemCount;
         this.totalPrice = totalPrice;
         this.averagePrice = averagePrice;
     }
@@ -49,12 +48,12 @@ public class ProductInflation extends ItemInflationAbstract {
         this.id = id;
     }
 
-    public Long getProductCount() {
-        return productCount;
+    public Long getItemCount() {
+        return itemCount;
     }
 
-    public void setProductCount(Long productCount) {
-        this.productCount = productCount;
+    public void setItemCount(Long productCount) {
+        this.itemCount = productCount;
     }
 
     @Override
@@ -91,10 +90,15 @@ public class ProductInflation extends ItemInflationAbstract {
     public String toString() {
         return "ProductInflation{" +
                 "id=" + id +
-                ", productCount=" + productCount +
+                ", productCount=" + itemCount +
                 ", totalPrice=" + totalPrice +
                 ", averagePrice=" + averagePrice +
                 ", updatedTime=" + updatedTime +
                 '}';
+    }
+
+    @Override
+    public int compareTo(ProductInflation o) {
+        return this.id.compareTo(o.id);
     }
 }

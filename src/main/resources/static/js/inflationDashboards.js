@@ -4,11 +4,10 @@
     'use strict'
 
     feather.replace({'aria-hidden': 'true'})
-    // Data from server
-
+    //  Fetching Data from server
     let response = await fetch(window.location.origin+"/api/inflation")
     let content = await response.json()
-    let labelList = []
+    let labelList = [] //
     let priceList = []
     for (let key in content){
         const currentPrice = content[key].averagePrice

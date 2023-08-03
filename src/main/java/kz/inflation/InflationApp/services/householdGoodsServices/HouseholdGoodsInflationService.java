@@ -42,10 +42,11 @@ public class HouseholdGoodsInflationService {
 
 
     private HouseholdGoodsInflation updateInflationInformation(List<HouseholdGoods> goods, LocalDate date){
-        long count = (long) goods.size();
+        long count = goods.size();
+        count = count == 0 ? 1 : goods.size();
         long sum = 0L;
         for (HouseholdGoods householdGoods : goods) {
-            sum += (long) householdGoods.getPrice();
+            sum += householdGoods.getPrice();
         }
         return new HouseholdGoodsInflation(count,
                 sum,
