@@ -34,7 +34,8 @@ public class PharmacyController {
     }
 
     @GetMapping("/{articul}")
-    public String getProduct(@PathVariable Long articul){
+    public String getProduct(@PathVariable Long articul, Model model){
+        model.addAttribute("itemType", "pharmacy");
         return "products/product";
     }
 

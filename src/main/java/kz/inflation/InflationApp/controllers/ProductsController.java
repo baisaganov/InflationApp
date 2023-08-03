@@ -32,7 +32,8 @@ public class ProductsController {
     }
 
     @GetMapping("/{articul}")
-    public String getProduct(@PathVariable Long articul){
+    public String getProduct(@PathVariable Long articul, Model model){
+        model.addAttribute("itemType", "product");
         return "products/product";
     }
 
