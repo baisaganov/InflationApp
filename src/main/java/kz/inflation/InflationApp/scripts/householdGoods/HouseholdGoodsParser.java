@@ -62,7 +62,7 @@ public class HouseholdGoodsParser extends Thread {
         var user_agent = "Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us) " +
                 "AppleWebKit/528.18 (KHTML, like Gecko) Version/4.0 Mobile/7A341 Safari/528.16";
         FirefoxOptions options = new FirefoxOptions();
-        options.addArguments("-headless");
+//        options.addArguments("-headless");
         options.addPreference("general.useragent.override", "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1");
         options.addPreference("devtools.responsive.userAgent.override", "Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Mobile/15E148 Safari/604.1");
 
@@ -160,21 +160,12 @@ public class HouseholdGoodsParser extends Thread {
         for (Element product : products) {
             long articul = Long.parseLong(product.attr("data-product-id"));
             String name = product.getElementsByClass("item-card__name").text();
-            List<String> priceWithLiteral = Arrays.stream(product.getElementsByClass("item-card__debet").text().split(" ")).toList();// .getElementsByClass("item-card__prices-price")
-//<div class="item-card__prices-group">
-//    <div class="item-card__debet">
-//        <div>
-//            <span class="item-card__prices-price">325 ₸</span>
-//        </div>
-//    </div>
-//    <div class="item-card__instalment">
-//        <span class="item-card__prices-price">109 ₸</span>
-//        <span class="item-card__add-info"> x3</span>
-//    </div>
-//</div>
-            if (priceWithLiteral.size() < 2){
+            List<String> priceWithLiteral = Arrays.stream(product.getElementsByClass("item-card__debet").text().split(" ")).toList();
+
+            if (!product.getElementsByClass("discount__price").isEmpty()){
                 priceWithLiteral = Arrays.stream(product.getElementsByClass("discount__price").text().split(" ")).toList();
             }
+
             int realPrice = Integer.parseInt(String.join("", priceWithLiteral.subList(0, priceWithLiteral.size()-1)));
             HouseholdGoods product1 = new HouseholdGoods(articul, name, realPrice);
             if (category == null || category.getId() == null) category = categoryService.getCategory(document.getElementsByClass("catalog-grid-header__heading").text());
