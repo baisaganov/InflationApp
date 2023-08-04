@@ -37,6 +37,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -97,8 +98,7 @@ public class ParsingStarter {
 /*
 * Шедулер с еженедельным запуском по четвергам
 * */
-    @Scheduled(cron = "0 46 21 * * *", zone = "GMT+6")
-//    @Scheduled(cron = "0 0 8 * * THU", zone = "GMT+6")
+    @Scheduled(cron = "0 0 8 * * THU", zone = "GMT+6")
     public void singleThread() throws InterruptedException {
         // Запуск парсера продуктов
         this.productParserStarter();
@@ -268,10 +268,13 @@ public class ParsingStarter {
     private boolean householdGoodsParser() throws InterruptedException {
         long parsingProductsTimeStart = System.currentTimeMillis();
         log.info("Parsing householdGoods started");
-        log.info(System.getProperty("user.dir"));
         List<String> list = new ArrayList<>();
-        list.add("https://kaspi.kz/shop/nur-sultan/c/household%20goods/?q=%3AavailableInZones%3AMagnum_ZONE5%3Acategory%3AHousehold%20goods%3AallMerchants%3AMagnum&sort=relevance&sc=");
-        Thread thread1 = new Thread(new HouseholdGoodsParser(householdGoodsService, householdGoodsCategoryService, list));
+        list.add("https://kaspi.kz/shop/c/beauty%20care/all/?q=%3AallMerchants%3AMagnum");
+        list.add("https://kaspi.kz/shop/c/home/all/?q=%3AallMerchants%3AMagnum");
+        list.add("https://kaspi.kz/shop/c/household%20chemicals/?q=%3AallMerchants%3AMagnum");
+        Thread thread1 = new Thread(new HouseholdGoodsParser(householdGoodsService, householdGoodsCategoryService, new ArrayList<>(Collections.singleton(list.get(0)))));
+        Thread thread2 = new Thread(new HouseholdGoodsParser(householdGoodsService, householdGoodsCategoryService, new ArrayList<>(Collections.singleton(list.get(1)))));
+        Thread thread3 = new Thread(new HouseholdGoodsParser(householdGoodsService, householdGoodsCategoryService, new ArrayList<>(Collections.singleton(list.get(2)))));
 
         try {
             thread1.start();
@@ -280,7 +283,23 @@ public class ParsingStarter {
             return false;
         }
 
+        try {
+            thread2.start();
+        } catch (Exception e){
+            log.error("Thread2 householdGoods error" + e.getLocalizedMessage());
+            return false;
+        }
+
+        try {
+            thread3.start();
+        } catch (Exception e){
+            log.error("Thread3 householdGoods error" + e.getLocalizedMessage());
+            return false;
+        }
+
         thread1.join();
+        thread2.join();
+        thread3.join();
 
         log.info("Parsing householdGoods done in:" + (((System.currentTimeMillis() - parsingProductsTimeStart)/60)/60/10) + " minutes");
         return true;

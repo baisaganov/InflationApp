@@ -4,4 +4,6 @@ create table household_goods_category(
 );
 
 
-insert into household_goods_category(name) VALUES ('Хозяйственные товары');
+insert into household_goods_category(name) VALUES ('Красота и здоровье');
+insert into household_goods_category(name) VALUES ('Товары для дома и дачи');
+insert into household_goods_category(name) VALUES ('Бытовая химия');
