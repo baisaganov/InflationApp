@@ -1,9 +1,9 @@
 package kz.inflation.InflationApp.scripts;
 
 import kz.inflation.InflationApp.enums.OfficialBidsEnumeration;
-import kz.inflation.InflationApp.services.MRPService;
-import kz.inflation.InflationApp.services.MZPService;
-import kz.inflation.InflationApp.services.RefinancingBidsService;
+import kz.inflation.InflationApp.services.refinancingBidsServices.MRPService;
+import kz.inflation.InflationApp.services.refinancingBidsServices.MZPService;
+import kz.inflation.InflationApp.services.refinancingBidsServices.RefinancingBidsService;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -49,7 +49,6 @@ public class CreditMRPParser {
                 yearPriceMap.put(Integer.valueOf(e.text().split(" ")[4]), value
                         );
             }
-            System.out.println(yearPriceMap);
             switch (bids){
                 case MZP -> mzpService.updateData(yearPriceMap);
                 case MRP -> mrpService.updateData(yearPriceMap);

@@ -1,8 +1,7 @@
 package kz.inflation.InflationApp.controllers;
 
-import jakarta.validation.constraints.Min;
-import kz.inflation.InflationApp.models.Product;
-import kz.inflation.InflationApp.services.ProductService;
+import kz.inflation.InflationApp.models.products.Product;
+import kz.inflation.InflationApp.services.productServices.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -11,18 +10,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
 @RequestMapping("/search")
 public class SearchController {
 
-    private final ProductService productService;
+    private final ProductService pharmacyService;
 
     @Autowired
-    public SearchController(ProductService productService) {
-        this.productService = productService;
+    public SearchController(ProductService pharmacyService) {
+        this.pharmacyService = pharmacyService;
     }
 
     @GetMapping()
@@ -36,7 +34,7 @@ public class SearchController {
 
         model.addAttribute("req", q);
         model.addAttribute("page", page);
-        model.addAttribute("maxPage", productService.searchCount(q)/size);
+        model.addAttribute("maxPage", pharmacyService.searchCount(q)/size);
 
         List<Product> productList;
 
@@ -44,7 +42,7 @@ public class SearchController {
             int articul = Integer.parseInt(q);
             return "redirect:products/" + articul;
         } catch (NumberFormatException nfe){
-            productList = productService.findByName(q, PageRequest.of(page, size));
+            productList = pharmacyService.findByName(q, PageRequest.of(page, size));
         }
 
         if(productList.size()==1){

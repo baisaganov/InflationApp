@@ -11,6 +11,8 @@
     let labelList = []
     let priceList = []
     let list = document.querySelector('.productsInfo')
+    let productName = document.querySelector('#productName')
+    let pageTitle = document.querySelector('#pageTitle')
     for (let key in content){
         const currentPrice = content[key].price
         priceList.push(currentPrice)
@@ -84,4 +86,7 @@
             colorized + sign + changedPercent + '% </td>\n' +
             '                    </tr>' + list.innerHTML
     }
+    productName.innerHTML = content[0].name
+    pageTitle.innerHTML = content[0].name + ' – InflationMonitor'
+
 })()

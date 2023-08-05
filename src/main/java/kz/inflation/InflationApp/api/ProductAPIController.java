@@ -1,37 +1,39 @@
 package kz.inflation.InflationApp.api;
 
-import kz.inflation.InflationApp.dto.ProductCategoryDTO;
-import kz.inflation.InflationApp.dto.ProductDTO;
-import kz.inflation.InflationApp.models.ChangedProduct;
-import kz.inflation.InflationApp.models.Product;
-import kz.inflation.InflationApp.models.ProductCategory;
-import kz.inflation.InflationApp.models.ProductInflation;
-import kz.inflation.InflationApp.scripts.ProductsParser;
-import kz.inflation.InflationApp.services.ChangedProductService;
-import kz.inflation.InflationApp.services.ProductCategoryService;
-import kz.inflation.InflationApp.services.ProductInflationService;
-import kz.inflation.InflationApp.services.ProductService;
+import kz.inflation.InflationApp.dto.products.ProductCategoryDTO;
+import kz.inflation.InflationApp.dto.products.ProductDTO;
+import kz.inflation.InflationApp.models.products.ChangedProduct;
+import kz.inflation.InflationApp.models.products.Product;
+import kz.inflation.InflationApp.models.products.ProductCategory;
+import kz.inflation.InflationApp.models.products.ProductInflation;
+import kz.inflation.InflationApp.scripts.ParsingStarter;
+import kz.inflation.InflationApp.services.productServices.ChangedProductService;
+import kz.inflation.InflationApp.services.productServices.ProductCategoryService;
+import kz.inflation.InflationApp.services.productServices.ProductInflationService;
+import kz.inflation.InflationApp.services.productServices.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
 public class ProductAPIController {
 
     private final ProductService productService;
-    private final ProductsParser productsParser;
+    private final ParsingStarter parsingStarter;
     private final ProductInflationService productInflationService;
     private final ChangedProductService changedProductService;
     private final ProductCategoryService categoryService;
 
     @Autowired
-    public ProductAPIController(ProductService productService, ProductsParser productsParser, ProductInflationService productInflationService, ChangedProductService changedProductService, ProductCategoryService categoryService) {
+    public ProductAPIController(ProductService productService, ParsingStarter parsingStarter, ProductInflationService productInflationService, ChangedProductService changedProductService, ProductCategoryService categoryService) {
         this.productService = productService;
-        this.productsParser = productsParser;
+        this.parsingStarter = parsingStarter;
         this.productInflationService = productInflationService;
         this.changedProductService = changedProductService;
         this.categoryService = categoryService;
@@ -39,7 +41,7 @@ public class ProductAPIController {
 
     @GetMapping("/products/update")
     public List<ProductDTO> updateProducts() throws InterruptedException {
-        productsParser.singleThread();
+        parsingStarter.singleThread();
         return convertListToProductDTO(productService.getAllProducts());
     }
 
@@ -47,6 +49,13 @@ public class ProductAPIController {
     public List<ProductDTO> products() {
         return convertListToProductDTO(productService.getAllProducts());
     }
+
+    @GetMapping("/products/not-updated3")
+    public List<ProductDTO> updated3(){
+        return convertListToProductDTO(productService.saveNotUpdatedItems());
+    }
+
+
 
     @GetMapping("/products/{articul}")
     public List<ProductDTO> getProductByArticul(@PathVariable Long articul) {
@@ -76,6 +85,17 @@ public class ProductAPIController {
         return convertToCategoryDTO(categoryService.findAll());
     }
 
+    @GetMapping("/products/update-not-updated")
+    public ResponseEntity<String> update(){
+        productService.saveNotUpdatedItems();
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/products/today-count")
+    public int todayProductCount(){
+        return productInflationService.todayProductsCount();
+    }
+
     private List<ProductDTO> convertListToProductDTO(List<Product> products) {
         List<ProductDTO> dtoList = new ArrayList<>();
         for (Product e : products) {
@@ -84,7 +104,7 @@ public class ProductAPIController {
                     e.getName(),
                     e.getPrice(),
                     e.getUpdatedTime(),
-                    convertToCategoryDTO(e.getCategory())));
+                    convertToCategoryDTO((ProductCategory) e.getCategory())));
         }
         return dtoList;
     }
@@ -95,12 +115,15 @@ public class ProductAPIController {
 
     private List<ProductCategoryDTO> convertToCategoryDTO(List<ProductCategory> categoryList) {
         List<ProductCategoryDTO> dtoList = new ArrayList<>();
-        for (ProductCategory e : categoryList) {
-            dtoList.add(new ProductCategoryDTO(
-                    e.getId(),
-                    e.getName()
-            ));
-        }
+        dtoList = categoryList.stream()
+                .map(e -> new ProductCategoryDTO(e.getId(), e.getName()))
+                .collect(Collectors.toList());
+//        for (ProductCategory e : categoryList) {
+//            dtoList.add(new ProductCategoryDTO(
+//                    e.getId(),
+//                    e.getName()
+//            ));
+//        }
         return dtoList;
     }
 
